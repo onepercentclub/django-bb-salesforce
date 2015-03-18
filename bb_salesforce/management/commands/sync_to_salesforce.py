@@ -42,6 +42,9 @@ class Command(BaseCommand):
     }
 
     option_list = BaseCommand.option_list + (
+        make_option(['--tenant', '-t'], action='tenant', type='string', dest='tenant',
+                    help='Tenant to sync or export'),
+
         make_option('--dry-run', action='store_true', dest='dry_run', default=False,
                     help='Execute a Salesforce sync without saving to Salesforce.'),
 
@@ -59,6 +62,12 @@ class Command(BaseCommand):
         # Setup the log level for root logger.
         loglevel = self.verbosity_loglevel.get(options['verbosity'])
         logger.setLevel(loglevel)
+
+        if not options['tenant']:
+            logger.error("You must specify a ternant with '--tenant' or '-t'.")
+            tenant_list = Client.objects.all().list_values('name', flat=True)
+            logger.into("Valid tenants are: {0}".format(tenant_list))
+            sys.exit(1)
 
         if options['sync_updated'] and options['sync_all']:
             logger.error("You cannot set both '--sync-all' and '--sync-updated'.")
