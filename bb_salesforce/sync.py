@@ -3,7 +3,6 @@ from bluebottle.recurring_donations.models import MonthlyDonor
 from bluebottle.payments.models import OrderPayment
 import re
 from django.utils import timezone
-from registration.models import RegistrationProfile
 from apps.cowry_docdata.models import payment_method_mapping
 from bluebottle.projects.models import ProjectBudgetLine
 from apps.organizations.models import Organization, OrganizationMember
@@ -208,17 +207,7 @@ def sync_users(dry_run, sync_from_datetime, loglevel):
 
         # Determine if the user has activated himself, by default assume not
         # if this is a legacy record, by default assume it has activated
-        contact.has_activated = False
-        try:
-            rp = RegistrationProfile.objects.get(user_id=user.id)
-            contact.tags = rp.activation_key
-            if rp.activation_key == RegistrationProfile.ACTIVATED:
-                contact.has_activated = True
-        except RegistrationProfile.DoesNotExist:
-            if not user.is_active and user.date_joined == user.last_login:
-                contact.has_activated = False
-            else:
-                contact.has_activated = True
+        contact.has_activated = True
 
         contact.last_login = user.last_login
 

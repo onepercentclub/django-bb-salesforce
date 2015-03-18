@@ -3,7 +3,6 @@ import logging
 from bluebottle.projects.models import ProjectBudgetLine
 from bluebottle.payments.models import OrderPayment
 import os
-from registration.models import RegistrationProfile
 from django.utils import timezone
 from django.conf import settings
 from apps.cowry_docdata.models import payment_method_mapping
@@ -228,16 +227,7 @@ def generate_users_csv_file(path, loglevel):
                 if user.last_login:
                     last_login = user.last_login.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-                has_activated = False
-                try:
-                    rp = RegistrationProfile.objects.get(id=user.id)
-                    if rp.activation_key == RegistrationProfile.ACTIVATED:
-                        has_activated = True
-                except RegistrationProfile.DoesNotExist:
-                    if not user.is_active and user.date_joined == user.last_login:
-                        has_activated = False
-                    else:
-                        has_activated = True
+                has_activated = True
 
                 try:
                     monthly_donor = MonthlyDonor.objects.get(user=user)
