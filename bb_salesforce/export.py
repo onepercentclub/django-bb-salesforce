@@ -5,8 +5,7 @@ from bluebottle.payments.models import OrderPayment
 import os
 from django.utils import timezone
 from django.conf import settings
-from apps.cowry_docdata.models import payment_method_mapping
-from apps.fund.models import Donation, DonationStatuses
+from bluebottle.donations.models import Donation
 from bluebottle.recurring_donations.models import MonthlyDonor
 from apps.vouchers.models import Voucher, VoucherStatuses
 from bluebottle.organizations.models import Organization, OrganizationMember
@@ -378,7 +377,7 @@ def generate_projects_csv_file(path, loglevel):
             if project.theme:
                 theme = project.theme.name
 
-            partner_organization_name = ""
+            partner_organization_name = "-"
             if project.partner_organization:
                 partner_organization_name = project.partner_organization.name
 
@@ -498,8 +497,8 @@ def generate_donations_csv_file(path, loglevel):
                     name = "Anonymous"
 
                 donation_ready = ''
-                if donation.ready:
-                    donation_ready = donation.ready.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                if donation.completed:
+                    donation_ready = donation.completed.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
                 # Get the payment method from the associated order / payment
                 payment_method = payment_method_mapping['']  # Maps to Unknown for DocData.
@@ -514,7 +513,7 @@ def generate_donations_csv_file(path, loglevel):
                                     '%01.2f' % (float(donation.amount) / 100),
                                     donation.created.date().strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                                     name.encode("utf-8"),
-                                    DonationStatuses.values[donation.status].title(),
+                                    donation.order.get_status_display(),
                                     donation.order.order_type,
                                     donation.created.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                                     donation.updated.strftime("%Y-%m-%dT%H:%M:%S.000Z"),

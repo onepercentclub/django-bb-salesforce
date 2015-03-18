@@ -3,12 +3,11 @@ from bluebottle.recurring_donations.models import MonthlyDonor
 from bluebottle.payments.models import OrderPayment
 import re
 from django.utils import timezone
-from apps.cowry_docdata.models import payment_method_mapping
 from bluebottle.projects.models import ProjectBudgetLine
-from apps.organizations.models import Organization, OrganizationMember
+from bluebottle.organizations.models import Organization, OrganizationMember
 from bluebottle.tasks.models import Task, TaskMember
 from bluebottle.donations.models import Donation
-from apps.vouchers.models import Voucher, VoucherStatuses
+from bluebottle.payments_vouchers.models import Voucher, VoucherStatuses
 from bluebottle.fundraisers.models import Fundraiser
 from bluebottle.projects.models import Project
 from bluebottle.members.models import Member
@@ -319,7 +318,7 @@ def sync_projects(dry_run, sync_from_datetime, loglevel):
             sfproject.tags = str(tag) + ", " + sfproject.tags
         sfproject.tags = sfproject.tags[:255]
 
-        sfproject.partner_organization = ""
+        sfproject.partner_organization = "-"
         if project.partner_organization:
             sfproject.partner_organization = project.partner_organization.name
 
