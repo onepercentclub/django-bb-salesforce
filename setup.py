@@ -1,6 +1,6 @@
 import os
 from setuptools import setup
-import reef_crawlable
+import bb_salesforce
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
