@@ -1,27 +1,17 @@
 import logging
-from bluebottle.recurring_donations.models import MonthlyDonor
-from bluebottle.payments.models import OrderPayment
 import re
 from django.utils import timezone
-from bluebottle.projects.models import ProjectBudgetLine
-from bluebottle.organizations.models import Organization, OrganizationMember
-from bluebottle.tasks.models import Task, TaskMember
-from bluebottle.donations.models import Donation
-from bluebottle.payments_vouchers.models import Voucher, VoucherStatuses
-from bluebottle.fundraisers.models import Fundraiser
-from bluebottle.projects.models import Project
-from bluebottle.members.models import Member
 
 from .models import SalesforceOrganization, SalesforceContact, SalesforceProject, \
     SalesforceDonation, SalesforceProjectBudget, SalesforceTask, SalesforceTaskMembers, SalesforceVoucher, \
     SalesforceLogItem, SalesforceFundraiser, SalesforceOrganizationMember
 
-logger = logging.getLogger('bluebottle.salesforce')
-re_email = re.compile("^[A-Z0-9._%+-/!#$%&'*=?^_`{|}~]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$")
+re_email = re.compile("^[A-Z0-9._%+-/!#$%&'*=?^_`{|}~]+@[A-Z0-9.-]+\\.[A-Z]{2,18}$")
 
+def sync_organizations(dry_run, sync_from_datetime, logger):
 
-def sync_organizations(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+    from bluebottle.organizations.models import Organization, OrganizationMember
+
     error_count = 0
     success_count = 0
 
@@ -110,8 +100,18 @@ def sync_organizations(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_users(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_users(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -237,8 +237,18 @@ def sync_users(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_projects(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_projects(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -341,8 +351,18 @@ def sync_projects(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_fundraisers(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_fundraisers(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -404,8 +424,18 @@ def sync_fundraisers(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_projectbudgetlines(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_projectbudgetlines(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -452,6 +482,17 @@ def sync_projectbudgetlines(dry_run, sync_from_datetime, loglevel):
 
 
 def sync_donations(dry_run, sync_from_datetime, loglevel):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     logger.setLevel(loglevel)
     error_count = 0
     success_count = 0
@@ -531,8 +572,18 @@ def sync_donations(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_vouchers(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_vouchers(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -594,8 +645,18 @@ def sync_vouchers(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_tasks(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_tasks(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -665,8 +726,18 @@ def sync_tasks(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_taskmembers(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_taskmembers(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -718,8 +789,18 @@ def sync_taskmembers(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def sync_organizationmembers(dry_run, sync_from_datetime, loglevel):
-    logger.setLevel(loglevel)
+def sync_organizationmembers(dry_run, sync_from_datetime, logger):
+    from bluebottle.projects.models import ProjectBudgetLine
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.payments_voucher.models import Voucher, VoucherStatuses
+    from bluebottle.fundraisers.models import Fundraiser
+    from bluebottle.projects.models import Project
+    from bluebottle.members.models import Member
+    from bluebottle.recurring_donations.models import MonthlyDonor
+    from bluebottle.payments.models import OrderPayment
+
     error_count = 0
     success_count = 0
 
@@ -774,9 +855,7 @@ def sync_organizationmembers(dry_run, sync_from_datetime, loglevel):
     return success_count, error_count
 
 
-def send_log(filename, err, succ, command, command_ext, dry_run, loglevel):
-    logger.setLevel(loglevel)
-
+def send_log(filename, err, succ, command, command_ext, dry_run, logger):
     sflog = SalesforceLogItem()
 
     logger.info("Sending log to Salesforce...")

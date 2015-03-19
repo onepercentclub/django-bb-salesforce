@@ -5,14 +5,14 @@ from bluebottle.payments.models import OrderPayment
 import os
 from django.utils import timezone
 from django.conf import settings
-from bluebottle.donations.models import Donation
-from bluebottle.recurring_donations.models import MonthlyDonor
-from apps.vouchers.models import Voucher, VoucherStatuses
-from bluebottle.organizations.models import Organization, OrganizationMember
-from bluebottle.fundraisers.models import Fundraiser
-from bluebottle.tasks.models import Task, TaskMember
-from bluebottle.projects.models import Project
-from bluebottle.members.models import Member
+# from bluebottle.donations.models import Donation
+# from bluebottle.recurring_donations.models import MonthlyDonor
+# from bluebottle.payments_vouchers.models import Voucher, VoucherStatuses
+# from bluebottle.organizations.models import Organization, OrganizationMember
+# from bluebottle.fundraisers.models import Fundraiser
+# from bluebottle.tasks.models import Task, TaskMember
+# from bluebottle.projects.models import Project
+# from bluebottle.members.models import Member
 
 logger = logging.getLogger('bluebottle.salesforce')
 
