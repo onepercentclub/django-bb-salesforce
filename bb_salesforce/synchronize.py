@@ -1,30 +1,81 @@
-from bluebottle.organizations.models import Organization
-from bluebottle.members.models import Member
-from bb_salesforce.models import SalesforceOrganization, SalesforceContact
-from bb_salesforce.transformers import OrganizationTransformer
+from bb_salesforce.models import (
+    SalesforceOrganization, SalesforceContact, SalesforceProject,
+    SalesforceFundraiser
+)
+from bb_salesforce.transformers import (
+    OrganizationTransformer, MemberTransformer, ProjectTransformer,
+    FundraiserTransformer
+)
 
 
-def sync_organizations():
-    organizations = Organization.objects.all()
+def sync_model(model=None, sf_model=None, transformer=None,
+               logger=None, updated_after=None):
 
-    trans = OrganizationTransformer()
-    for org in organizations:
-        trans_org = trans.transform(org)
-        sf_org, created = SalesforceOrganization.objects.get_or_create(external_id=trans_org['external_id'])
-        sf_org.update(trans_org)
-        sf_org.save()
+    objects = model.objects
+    if updated_after:
+        objects = objects.filter(updated__gte=updated_after)
 
-def sync_members():
-    members = Member.objects.all()
+    logger.info("Found {0} {1}s".format(objects.count(), model.__name__))
 
-    trans = MemberTransformer()
-    for member in members:
-        trans_member = trans.transform(member)
-        sf_member, created = SalesforceContact.objects.get_or_create(external_id=trans_member['external_id'])
-        sf_member.update(trans_member)
-        sf_member.save()
+    t = 0
+    for obj in objects.all():
+        t += 1
+        logger.info("Syncing {0}  {1}/{2} [ID={3}] {4}".format(
+            model.__name__, t, objects.count(), obj.id, str(obj)))
+        trans_object = transformer().transform(obj)
 
-def sync_all():
-    sync_organizations()
-    sync_members()
+        try:
+            sf_object = sf_model.objects.get(
+                external_id=trans_object['external_id'])
+        except sf_model.DoesNotExist:
+            sf_object  = sf_model(external_id=trans_object['external_id'])
+        for attr, value in trans_object.iteritems():
+            setattr(sf_object, attr, value)
+        sf_object.save()
+
+
+def sync_all(logger, updated_after=None):
+    from bluebottle.organizations.models import Organization, OrganizationMember
+    from bluebottle.members.models import Member
+    from bluebottle.tasks.models import Task, TaskMember
+    from bluebottle.donations.models import Donation
+    from bluebottle.projects.models import Project, ProjectBudgetLine
+    from bluebottle.fundraisers.models import Fundraiser
+
+    sync_model(Member, SalesforceContact,
+               MemberTransformer,
+               logger, updated_after)
+
+    sync_model(Organization, SalesforceOrganization,
+               OrganizationTransformer,
+               logger, updated_after)
+
+    sync_model(OrganizationMember, SalesforceOrganizationMember,
+               OrganizationMemberTransformer,
+               logger, updated_after)
+
+    sync_model(Project, SalesforceProject,
+               ProjectTransformer,
+               logger, updated_after)
+
+    sync_model(Fundraiser, SalesforceFundraiser,
+               FundraiserTransformer,
+               logger, updated_after)
+
+    sync_model(ProjectBudgetLine, SalesforceProjectBudget,
+               ProjectBudgetTransformer,
+               logger, updated_after)
+
+    sync_model(Task, SalesforceTask,
+               TaskTransformer,
+               logger, updated_after)
+
+    sync_model(TaskMember, SalesforceTaskMember,
+               TaskMemberTransformer,
+               logger, updated_after)
+
+    sync_model(Donation, SalesforceDonation,
+               DonationTransformer,
+               logger, updated_after)
+
     print "Done!"

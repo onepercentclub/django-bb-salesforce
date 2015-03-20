@@ -60,8 +60,9 @@ class Command(BaseCommand):
         # Setup the log level for root logger.
         if options['log_to_salesforce']:
             logger = logging.getLogger('salesforce')
-            fhndl = logging.handlers.RotatingFileHandler(os.path.join(settings.PROJECT_ROOT, "salesforce", "log", "last.log"),
-                                                         backupCount=5)
+            fhndl = logging.handlers.RotatingFileHandler(
+                os.path.join( settings.PROJECT_ROOT,"salesforce", "log", "last.log"),
+                backupCount=5)
             formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
             fhndl.setFormatter(formatter)
             fhndl.doRollover()
@@ -89,8 +90,11 @@ class Command(BaseCommand):
         if options['sync_updated'] and options['sync_all']:
             logger.error("You cannot set both '--sync-all' and '--sync-updated'.")
             sys.exit(1)
-        elif not options['csv_export'] and not options['sync_updated'] and not options['sync_all']:
-            logger.error("You must set either '--csv-export', '--sync-all' or '--sync-updated MINUTES'. "
+        elif not options['csv_export'] \
+                and not options['sync_updated'] \
+                and not options['sync_all']:
+            logger.error("You must set either '--csv-export', "
+                         "'--sync-all' or '--sync-updated MINUTES'. "
                          "See help for more information.")
             sys.exit(1)
 
@@ -103,7 +107,7 @@ class Command(BaseCommand):
         logger.info("Process starting at {0}.".format(timezone.localtime(timezone.now())))
 
         try:
-            sync_all()
+            sync_all(logger, sync_from_datetime)
 
         except Exception as e:
             self.error_count += 1

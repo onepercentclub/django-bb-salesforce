@@ -144,12 +144,12 @@ class SalesforceProject(SalesforceModel):
     describe_the_project_in_one_sentence = models.CharField(max_length=50000,
                                                             db_column='Describe_the_project_in_one_sentence__c')
     story = models.CharField(max_length=32768, db_column='Story__c')
-    third_half_project = models.BooleanField(db_column='third_half_project__c')
+    third_half_project = models.BooleanField(db_column='third_half_project__c', default=False)
     organization_account = models.ForeignKey(SalesforceOrganization, db_column='Organization__c', null=True)
     comments = models.CharField(max_length=32000, db_column='Comments__c')
     contribution_project_in_reducing_poverty = models.CharField(max_length=32000,
                                                                 db_column='Contribution_project_in_reducing_poverty__c')
-    earth_charther_project = models.BooleanField(db_column='Earth_Charther_project__c')
+    earth_charther_project = models.BooleanField(db_column='Earth_Charther_project__c', default=False)
     sustainability = models.CharField(max_length=20000, db_column='Sustainability__c')
     additional_explanation_of_budget = models.CharField(max_length=32000,
                                                         db_column='Additional_explanation_of_budget__c')
