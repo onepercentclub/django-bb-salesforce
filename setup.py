@@ -23,9 +23,6 @@ setup(
         'django-salesforce==0.5',
     ],
     tests_require=[
-        'django-nose==1.3',
-        'django-setuptest==0.1.4',
-        'mock'
     ],
     test_suite = "bb_salesforce.runtests.runtests",
     classifiers=[
