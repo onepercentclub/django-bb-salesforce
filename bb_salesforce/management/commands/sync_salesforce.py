@@ -12,7 +12,7 @@ from bluebottle.clients.models import Client
 
 #
 # Run with:
-# ./manage.py sync_to_salesforce -v 2 --settings=bluebottle.settings.salesforcesync
+# ./manage.py sync_salesforce -v 2 --sync-updated 3600 --settings=bluebottle.settings.salesforcesync
 #
 
 
@@ -42,6 +42,9 @@ class Command(BaseCommand):
 
         make_option('--sync-updated', action='store', dest='sync_updated', type='int', metavar='MINUTES',
                     help="Only sync records that have been updated in the last MINUTES minutes."),
+
+        make_option('--sync-new', action='store_true', dest='sync_new',
+                    help="Sync only new records."),
 
         make_option('--sync-all', action='store_true', dest='sync_all',
                     help="Sync all records."),
@@ -84,12 +87,8 @@ class Command(BaseCommand):
         if options['sync_updated'] and options['sync_all']:
             logger.error("You cannot set both '--sync-all' and '--sync-updated'.")
             sys.exit(1)
-        elif not options['csv_export'] \
-                and not options['sync_updated'] \
-                and not options['sync_all']:
-            logger.error("You must set either '--csv-export', "
-                         "'--sync-all' or '--sync-updated MINUTES'. "
-                         "See help for more information.")
+        elif not options['csv_export'] and not options['sync_updated'] and not options['sync_all'] and not options['sync_new']:
+            logger.error("You must specify an action")
             sys.exit(1)
 
         sync_from_datetime = None
@@ -101,21 +100,9 @@ class Command(BaseCommand):
         logger.info("Process starting at {0}.".format(timezone.localtime(timezone.now())))
 
         try:
-            sync_all(logger, sync_from_datetime)
+            sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
 
         except Exception as e:
             self.error_count += 1
             logger.error("Error - stopping: {0}".format(e))
 
-        logger.info("Process finished at {2} with {0} successes and {1} errors.".format(self.success_count,
-                                                                                        self.error_count,
-                                                                                        timezone.localtime(
-                                                                                            timezone.now())))
-        send_log(os.path.join(settings.PROJECT_ROOT, "salesforce", "log", "last.log"),
-                 self.error_count, self.success_count, "export" if options['csv_export'] else "sync",
-                 options, options['dry_run'], logger)
-
-    def run_with_count_update(self, function, *args, **kwargs):
-        cur_success_count, cur_error_count = function(*args, **kwargs)
-        self.success_count += cur_success_count
-        self.error_count += cur_error_count

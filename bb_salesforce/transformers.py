@@ -9,8 +9,7 @@ from bb_salesforce.mappings import (
 from .base import BaseTransformer
 from bb_salesforce.models import (
     SalesforceContact, SalesforceOrganization, SalesforceProject,
-    SalesforceTask,
-    SalesforceFundraiser)
+    SalesforceTask, SalesforceFundraiser)
 
 
 class OrganizationTransformer(BaseTransformer):

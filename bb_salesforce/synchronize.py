@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from bb_salesforce.models import (
     SalesforceOrganization, SalesforceContact, SalesforceProject,
     SalesforceFundraiser
@@ -9,7 +11,7 @@ from bb_salesforce.transformers import (
 
 
 def sync_model(model=None, sf_model=None, transformer=None,
-               logger=None, updated_after=None):
+               logger=None, updated_after=None, only_new=False):
 
     objects = model.objects
     if updated_after:
@@ -18,23 +20,26 @@ def sync_model(model=None, sf_model=None, transformer=None,
     logger.info("Found {0} {1}s".format(objects.count(), model.__name__))
 
     t = 0
+
     for obj in objects.all():
         t += 1
-        logger.info("Syncing {0}  {1}/{2} [ID={3}] {4}".format(
+        logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
             model.__name__, t, objects.count(), obj.id, str(obj)))
         trans_object = transformer().transform(obj)
 
+        new = True
         try:
             sf_object = sf_model.objects.get(
                 external_id=trans_object['external_id'])
+            new = False
         except sf_model.DoesNotExist:
             sf_object  = sf_model(external_id=trans_object['external_id'])
         for attr, value in trans_object.iteritems():
             setattr(sf_object, attr, value)
-        sf_object.save()
+        if (only_new and new) or not only_new:
+            sf_object.save()
 
-
-def sync_all(logger, updated_after=None):
+def sync_all(logger, updated_after=None, only_new=False):
     from bluebottle.organizations.models import Organization, OrganizationMember
     from bluebottle.members.models import Member
     from bluebottle.tasks.models import Task, TaskMember
@@ -44,38 +49,38 @@ def sync_all(logger, updated_after=None):
 
     sync_model(Member, SalesforceContact,
                MemberTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(Organization, SalesforceOrganization,
                OrganizationTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(OrganizationMember, SalesforceOrganizationMember,
                OrganizationMemberTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(Project, SalesforceProject,
                ProjectTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(Fundraiser, SalesforceFundraiser,
                FundraiserTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(ProjectBudgetLine, SalesforceProjectBudget,
                ProjectBudgetTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(Task, SalesforceTask,
                TaskTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(TaskMember, SalesforceTaskMember,
                TaskMemberTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     sync_model(Donation, SalesforceDonation,
                DonationTransformer,
-               logger, updated_after)
+               logger, updated_after, only_new)
 
     print "Done!"

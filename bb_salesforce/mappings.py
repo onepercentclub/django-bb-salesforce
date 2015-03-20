@@ -255,7 +255,7 @@ class StreetMapping(StringMapping):
     def map(self, from_instance, to_field):
         address = getattr(from_instance, self.from_field, None)
         if address:
-            new_value = "{0} {1}".format(getattr(address, 'line1'), getattr(address, 'line2'))
+            new_value = u'{0} {1}'.format(getattr(address, 'line1'), getattr(address, 'line2'))
             new_value = new_value.strip()
             return {to_field: new_value}
         return {to_field: ''}
