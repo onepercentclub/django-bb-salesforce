@@ -24,7 +24,7 @@ setup(
     ],
 
     install_requires=[
-        'Django>=1.6.8',
+        'Django==1.6.8',
         'django-salesforce==0.5',
     ],
     tests_require=[
