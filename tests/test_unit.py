@@ -1,13 +1,13 @@
 from decimal import Decimal
 
 from django.template import Template, Context, TemplateSyntaxError
-from django.utils import unittest
+from django.utils import unittest, timezone
 
 from bb_salesforce.mappings import CropMapping, ConcatenateMapping, EmailMapping, \
     EuroMapping
 from bb_salesforce.transformers import MemberTransformer
 
-from tests.factories import MemberFactory
+from tests.factories import MemberFactory, AddressFactory, CountryFactory
 from tests.models import Member
 
 
@@ -57,13 +57,62 @@ class MappingsTestCase(unittest.TestCase):
 class TransformerTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.time1 = timezone.datetime(2015, 1, 1)
+
         self.member1 = MemberFactory.create(
             username='Vlammetje', first_name='Henk',last_name='Wijngaarden',
             email='henk@vlamindepijp.nl', budget=Decimal(15.5),
-            gender='m')
+            gender='m',
+            member_since=self.time1,
+            last_login=self.time1,
+            date_joined=self.time1,
+            deleted=None
+            )
+
+        self.address = AddressFactory(
+            user=self.member1,
+            line1='Paleis',
+            line2='Dam 1',
+            postal_code='1000AA',
+            state='',
+            city='Nul Tien',
+            country=CountryFactory(name='Netherlands')
+            )
 
     def test_member_transformer(self):
         transformer = MemberTransformer()
         value_dict = transformer.transform(self.member1)
-        print value_dict
+
+        data = {'last_name': 'Wijngaarden',
+                'about_me_us': u'',
+                'external_id': 9,
+                'deleted': None,
+                'member_since': self.time1,
+                'is_active': False,
+                'bank_account_city': '',
+                'phone': u'',
+                'mailing_postal_code': '1000AA',
+                'primary_language': u'',
+                'has_activated': False,
+                'mailing_city': 'Nul Tien',
+                'date_joined': self.time1,
+                'first_name': 'Henk',
+                'receive_newsletter': True,
+                'mailing_state': '',
+                'gender': u'Male',
+                'bank_account_holder': '',
+                'mailing_street': u'Paleis Dam 1',
+                'contact.category1': u'',
+                'mailing_country': 'Netherlands',
+                'picture_location': '',
+                'bank_account_iban': '',
+                'bank_account_active_recurring_debit': '',
+                'last_login': self.time1,
+                'location': u'',
+                'birth_date': None,
+                'user_name': 'Vlammetje',
+                'email': 'henk@vlamindepijp.nl'}
+
+        self.assertEqual(data, value_dict)
+
 
