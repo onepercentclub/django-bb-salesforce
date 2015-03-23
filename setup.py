@@ -33,6 +33,7 @@ setup(
         'django-extensions',
         'django-nose==1.3',
         'django-setuptest==0.1.4',
+        'surlex',
         'mock'
     ],
     test_suite = "runtests.runtests",
