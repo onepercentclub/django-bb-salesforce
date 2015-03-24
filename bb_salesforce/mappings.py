@@ -174,7 +174,7 @@ class EuroMapping(IdentityMapping):
     def map_value(self, old_value):
         old_value = super(EuroMapping, self).map_value(old_value)
         if not old_value:
-            return self.default
+            old_value = self.default
         return "%01.2f" % (old_value)
 
 

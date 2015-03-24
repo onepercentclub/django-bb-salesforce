@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from setuptools import setup
 import bb_salesforce
@@ -18,13 +19,24 @@ setup(
     url="http://onepercentclub.com",
     author="1%Club Developers",
     author_email="devteam@onepercentclub.com", 
+    dependency_links = [
+        'https://github.com/onepercentclub/bluebottle/archive/saas-1.1.10.zip#egg=bluebottle-saas-1.1.10',
+    ],
+
     install_requires=[
-        'Django>=1.6.8',
+        'Django==1.6.8',
         'django-salesforce==0.5',
     ],
     tests_require=[
+        'factory-boy',
+        'django-choices',
+        'django-extensions',
+        'django-nose==1.3',
+        'django-setuptest==0.1.4',
+        'surlex',
+        'mock'
     ],
-    test_suite = "bb_salesforce.runtests.runtests",
+    test_suite = "runtests.runtests",
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
