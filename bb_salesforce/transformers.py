@@ -8,7 +8,7 @@ from bb_salesforce.mappings import (
     OrderPaymentMethodMapping)
 from .base import BaseTransformer
 from bb_salesforce.models import (
-    SalesforceContact, SalesforceOrganization, SalesforceProject,
+    SalesforceMember, SalesforceOrganization, SalesforceProject,
     SalesforceTask, SalesforceFundraiser)
 
 
@@ -113,7 +113,7 @@ class OrganizationMemberTransformer(BaseTransformer):
 
     field_mapping = {
         'external_id': 'org_member.id',
-        'contact': SalesforceObjectMapping('user', SalesforceContact),
+        'contact': SalesforceObjectMapping('user', SalesforceMember),
         'organization':
             SalesforceObjectMapping('organization',SalesforceOrganization),
         'role': 'function'
@@ -162,7 +162,7 @@ class ProjectTransformer(BaseTransformer):
         'supporter_count': MethodMapping('supporters_count'),
         'supporter_oo_count': MethodMapping('supporters_count', True),
 
-        'project_owner': SalesforceObjectMapping('owner', SalesforceContact),
+        'project_owner': SalesforceObjectMapping('owner', SalesforceMember),
         'organization_account':
             SalesforceObjectMapping('organization', SalesforceOrganization),
 
@@ -172,7 +172,7 @@ class FundraiserTransformer(BaseTransformer):
 
     field_mapping = {
         'external_id': 'id',
-        'owner': SalesforceObjectMapping('owner', SalesforceContact),
+        'owner': SalesforceObjectMapping('owner', SalesforceMember),
         'project': SalesforceObjectMapping('project', SalesforceProject),
         'picture_location':  ImageMapping('image'),
         'name': CropMapping('title', 80),
@@ -203,7 +203,7 @@ class DonationTransformer(BaseTransformer):
         'external_id_donation': 'id',
         'amount': EuroMapping('amount'),
 
-        'donor': SalesforceObjectMapping('order.user', SalesforceContact),
+        'donor': SalesforceObjectMapping('order.user', SalesforceMember),
         'project': SalesforceObjectMapping('project', SalesforceProject),
         'fundraiser':
             SalesforceObjectMapping('fundraiser', SalesforceFundraiser),
@@ -229,7 +229,7 @@ class TaskTransformer(BaseTransformer):
 
         'external_id': 'id',
         'project': SalesforceObjectMapping('project', SalesforceProject),
-        'author':  SalesforceObjectMapping('author', SalesforceContact),
+        'author':  SalesforceObjectMapping('author', SalesforceMember),
         'deadline': DateTimeMapping('deadline'),
 
         'effort': 'time_needed',
@@ -254,7 +254,7 @@ class TaskMemberTransformer(BaseTransformer):
     field_mapping = {
 
         'external_id': 'id',
-        'contacts': SalesforceObjectMapping('member', SalesforceContact),
+        'contacts': SalesforceObjectMapping('member', SalesforceMember),
         'x1_club_task': SalesforceObjectMapping('task', SalesforceTask),
         'motivation': 'motivation',
         'status': ChoiceMapping('status'),
