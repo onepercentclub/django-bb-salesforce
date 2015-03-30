@@ -40,16 +40,16 @@ class Command(BaseCommand):
         make_option('--dry-run', action='store_true', dest='dry_run', default=False,
                     help='Execute a Salesforce sync without saving to Salesforce.'),
 
-        make_option('--sync-updated', action='store', dest='sync_updated', type='int', metavar='MINUTES',
-                    help="Only sync records that have been updated in the last MINUTES minutes."),
+        make_option('--updated', '-u', action='store', dest='updated', type='int', metavar='MINUTES',
+                    help="Only sync/export records that have been updated in the last MINUTES minutes."),
 
         make_option('--sync-new', action='store_true', dest='sync_new',
                     help="Sync only new records."),
 
-        make_option('--sync-all', action='store_true', dest='sync_all',
+        make_option('--synchronize', '-s', action='store_true', dest='synchronize',
                     help="Sync all records."),
 
-        make_option('--csv-export', action='store_true', dest='csv_export', default=False,
+        make_option('--csv-export', '-x', action='store_true', dest='csv_export', default=False,
                     help="Generate CSV files instead of syncing data with the Salesforce REST API.")
     )
 
@@ -99,10 +99,17 @@ class Command(BaseCommand):
 
         logger.info("Process starting at {0}.".format(timezone.localtime(timezone.now())))
 
-        try:
-            sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
+        if options['synchronize']:
+            try:
+                sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
 
-        except Exception as e:
-            self.error_count += 1
-            logger.error("Error - stopping: {0}".format(e))
+            except Exception as e:
+                self.error_count += 1
+                logger.error("Error - stopping: {0}".format(e))
+        elif options['csv_export']:
+            try:
+                ecport_all(logger, sync_from_datetime)
 
+            except Exception as e:
+                self.error_count += 1
+                logger.error("Error - stopping: {0}".format(e))

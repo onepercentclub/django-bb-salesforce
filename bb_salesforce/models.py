@@ -62,7 +62,7 @@ class SalesforceOrganization(SalesforceModel):
         managed = False
 
 
-class SalesforceContact(SalesforceModel):
+class SalesforceMember(SalesforceModel):
     """
     Default Salesforce Contact model.
     """
