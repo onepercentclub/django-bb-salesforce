@@ -3,8 +3,8 @@ from decimal import Decimal
 from django.template import Template, Context, TemplateSyntaxError
 from django.utils import unittest, timezone
 
-from bb_salesforce.mappings import CropMapping, ConcatenateMapping, EmailMapping, \
-    EuroMapping
+from bb_salesforce.mappings import (CropMapping, ConcatenateMapping,
+                                    EmailMapping,EuroMapping)
 from bb_salesforce.transformers import MemberTransformer
 
 from tests.factories import MemberFactory, AddressFactory, CountryFactory
