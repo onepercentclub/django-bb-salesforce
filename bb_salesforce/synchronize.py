@@ -1,16 +1,23 @@
+# -*- coding: utf-8 -*-
+
 import csv
 import os
 
 from django.db import transaction
+from django.conf import settings
 
 from bb_salesforce import models as sf_models
 from bb_salesforce import transformers
+from bb_salesforce import exporters
 
 
 def sync_model(model=None, logger=None, updated_after=None, only_new=False):
 
-    sf_model = getattr(sf_models, "Salesforce{0}".format(model.__name__))
-    transformer = getattr(transformers, "{0}Transformer".format(model.__name__))
+    sf_model_name = "Salesforce{0}".format(model.__name__)
+    sf_model_class = getattr(sf_models, sf_model_name)
+
+    transformer_name = "{0}Transformer".format(model.__name__)
+    transformer = getattr(transformers, transformer_name)()
 
     objects = model.objects
     if updated_after:
@@ -24,7 +31,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
         t += 1
         logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
             model.__name__, t, objects.count(), obj.id, str(obj)))
-        trans_object = transformer().transform(obj)
+        trans_object = transformer.transform(obj)
 
         new = True
         try:
@@ -32,7 +39,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
                 external_id=trans_object['external_id'])
             new = False
         except sf_model.DoesNotExist:
-            sf_object  = sf_model(external_id=trans_object['external_id'])
+            sf_object  = sf_model_class(external_id=trans_object['external_id'])
         for attr, value in trans_object.iteritems():
             setattr(sf_object, attr, value)
         if (only_new and new) or not only_new:
@@ -59,6 +66,12 @@ def sync_all(logger, updated_after=None, only_new=False):
 
 def export_model(model=None, logger=None, updated_after=None):
 
+    export_path = os.path.join(settings.PROJECT_ROOT, "export", "salesforce")
+    transformer_name = "{0}Transformer".format(model.__name__)
+    transformer = getattr(transformers, transformer_name)()
+    exporter_name = "{0}Exporter".format(model.__name__)
+    exporter = getattr(exporters, exporter_name)()
+
     objects = model.objects
     if updated_after:
         objects = objects.filter(updated__gte=updated_after)
@@ -67,21 +80,25 @@ def export_model(model=None, logger=None, updated_after=None):
 
     t = 0
 
-    filename = 'BLUE2SFDC_{0}.csv'.format(model.__name__)
+    filename = 'BLUE2SFDC_{0}s.csv'.format(model.__name__)
+    if not os.path.exists(export_path):
+        os.mkdirs(export_path)
 
-    with open(os.path.join(path, filename), 'wb') as csv_outfile:
+    with open(os.path.join(export_path, filename), 'wb') as csv_outfile:
         csv_writer = csv.writer(csv_outfile, quoting=csv.QUOTE_ALL)
 
         # Header row
-        csv_writer.writerow(self.field_map.keys())
+        csv_writer.writerow(exporter.field_mapping.keys())
+        import ipdb; ipdb.set_trace()
+
 
         for obj in objects.all():
             t += 1
             logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
                 model.__name__, t, objects.count(), obj.id, str(obj)))
-            trans_object = transformer().transform(obj)
-            export_object = exporter().export(trans_object)
-            csvwriter.writerow(export_object.to_csv())
+            trans_object = transformer.transform(obj)
+            export_row = exporter.export(trans_object)
+            csv_writer.writerow(export_row)
 
 
 def export_all(logger, updated_after=None):

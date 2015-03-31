@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import time
 import csv
 from datetime import datetime
@@ -7,9 +9,12 @@ from django.db import connections
 from django.db import transaction
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS, ObjectDoesNotExist
 from pytz.exceptions import AmbiguousTimeError
+from bb_salesforce.serializers import UnicodeSerializer
 from .mappings import IdentityMapping
 
 import logging
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,35 +56,30 @@ class BaseTransformer(object):
 
 class BaseExporter(object):
 
-    def get_mapping(self, field):
+    def get_serializer(self, field):
         """
         Get the mapping object for the specified field from `field_mapping`.
         """
-        mapping = self.field_mapping.get(field)
+        serializer = self.field_mapping.get(field)
 
-        if mapping == True:
-            # True means just copy the field
-            mapping = IdentityMapping()
+        if not serializer:
+            # If no string or serializer specified return empty string.
+            serializer = EmptySerializer('')
+        elif isinstance(serializer, basestring):
+            serializer = UnicodeSerializer(serializer)
 
-        elif mapping == None:
-            # None means: throw away the data
-            mapping = NullMapping()
-
-        elif isinstance(mapping, basestring):
-            # A string can be passed to map to a different field
-            mapping = IdentityMapping(mapping)
-
-        # By this time mapping should be a callable yielding a dict
-        assert callable(mapping), u'No forward mapping defined for mapping %s' % mapping
+        # By this time serializer should be a callable yielding a dict
+        # assert callable(serializer), u'No forward serializer defined for serializer %s' % serializer
+        return serializer
 
 
-    def export(self, object_list):
+    def export(self, from_instance):
 
         values = []
-
         for field in self.field_mapping.iterkeys():
             # Get the mapping
-            mapping = self.get_mapping(field)
-            values.add(mapping(from_instance, field))
+            serializer = self.get_serializer(field)
 
-        return value_dict
+            values.append(serializer(from_instance))
+
+        return values
