@@ -201,7 +201,7 @@ class SalesforceProject(SalesforceModel):
         managed = False
 
 
-class SalesforceProjectBudget(SalesforceModel):
+class SalesforceProjectBudgetLine(SalesforceModel):
     """
     Custom Salesforce Project_Budget__c model. For Onepercentclub the mapping is named Project Budget.
     """
@@ -320,7 +320,7 @@ class SalesforceTask(SalesforceModel):
         managed = False
 
 
-class SalesforceTaskMembers(SalesforceModel):
+class SalesforceTaskMember(SalesforceModel):
     """
     Custom Salesforce Task_Members__c model. For Onepercentclub the mapping is named Task Member(s).
     The table is used as a joined table which relates to Tasks to the Contacts.

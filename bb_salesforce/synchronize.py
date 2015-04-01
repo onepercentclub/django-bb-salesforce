@@ -14,10 +14,10 @@ from bb_salesforce import exporters
 def sync_model(model=None, logger=None, updated_after=None, only_new=False):
 
     sf_model_name = "Salesforce{0}".format(model.__name__)
-    sf_model_class = getattr(sf_models, sf_model_name)
+    sf_model = getattr(sf_models, sf_model_name)
 
     transformer_name = "{0}Transformer".format(model.__name__)
-    transformer = getattr(transformers, transformer_name)()
+    transformer = getattr(transformers, transformer_name)
 
     objects = model.objects
     if updated_after:
@@ -31,7 +31,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
         t += 1
         logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
             model.__name__, t, objects.count(), obj.id, str(obj)))
-        trans_object = transformer.transform(obj)
+        trans_object = transformer(obj).to_dict()
 
         new = True
         try:
@@ -39,7 +39,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
                 external_id=trans_object['external_id'])
             new = False
         except sf_model.DoesNotExist:
-            sf_object  = sf_model_class(external_id=trans_object['external_id'])
+            sf_object  = sf_model(external_id=trans_object['external_id'])
         for attr, value in trans_object.iteritems():
             setattr(sf_object, attr, value)
         if (only_new and new) or not only_new:
@@ -68,9 +68,9 @@ def export_model(model=None, logger=None, updated_after=None):
 
     export_path = os.path.join(settings.PROJECT_ROOT, "export", "salesforce")
     transformer_name = "{0}Transformer".format(model.__name__)
-    transformer = getattr(transformers, transformer_name)()
-    exporter_name = "{0}Exporter".format(model.__name__)
-    exporter = getattr(exporters, exporter_name)()
+    transformer = getattr(transformers, transformer_name)
+    sf_model_name = "Salesforce{0}".format(model.__name__)
+    sf_model = getattr(sf_models, sf_model_name)
 
     objects = model.objects
     if updated_after:
@@ -87,17 +87,18 @@ def export_model(model=None, logger=None, updated_after=None):
     with open(os.path.join(export_path, filename), 'wb') as csv_outfile:
         csv_writer = csv.writer(csv_outfile, quoting=csv.QUOTE_ALL)
 
-        # Header row
-        csv_writer.writerow(exporter.field_mapping.keys())
-        import ipdb; ipdb.set_trace()
-
+        # Get titles from db_column names from sf model
+        sf_names = []
+        for field in transformer.field_mapping.keys():
+            local_name, sf_name = sf_model._meta.get_field_by_name(field)[0].get_attname_column()
+            sf_names.append(sf_name)
+        csv_writer.writerow(sf_names)
 
         for obj in objects.all():
             t += 1
             logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
                 model.__name__, t, objects.count(), obj.id, str(obj)))
-            trans_object = transformer.transform(obj)
-            export_row = exporter.export(trans_object)
+            export_row = transformer(obj).to_csv()
             csv_writer.writerow(export_row)
 
 
@@ -109,4 +110,12 @@ def export_all(logger, updated_after=None):
     from bluebottle.projects.models import Project, ProjectBudgetLine
     from bluebottle.fundraisers.models import Fundraiser
 
-    export_model(Organization, logger, updated_after)
+    export_model(Member, logger, updated_after)
+    # export_model(Organization, logger, updated_after)
+    # export_model(OrganizationMember, logger, updated_after)
+    # export_model(Project, logger, updated_after)
+    # export_model(ProjectBudgetLine, logger, updated_after)
+    # export_model(Fundraiser, logger, updated_after)
+    # export_model(Task, logger, updated_after)
+    # export_model(TaskMember, logger, updated_after)
+    export_model(Donation, logger, updated_after)
