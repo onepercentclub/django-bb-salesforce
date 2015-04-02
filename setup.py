@@ -19,10 +19,6 @@ setup(
     url="http://onepercentclub.com",
     author="1%Club Developers",
     author_email="devteam@onepercentclub.com", 
-    dependency_links = [
-        'https://github.com/onepercentclub/bluebottle/archive/saas-1.1.10.zip#egg=bluebottle-saas-1.1.10',
-    ],
-
     install_requires=[
         'Django==1.6.8',
         'django-salesforce==0.5',
