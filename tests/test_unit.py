@@ -114,7 +114,7 @@ class TransformerTestCase(unittest.TestCase):
                 'last_login': self.time,
                 'location': u'',
                 'birth_date': None,
-                'user_name': 'Vlammetje',
+                'user_name': u'Vlammetje',
                 'email': 'henk@vlamindepijp.nl'}
 
         # Try transform to_field
