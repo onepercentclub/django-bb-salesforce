@@ -71,7 +71,7 @@ def export_model(model=None, logger=None, updated_after=None):
     sf_model_name = "Salesforce{0}".format(model.__name__)
     sf_model = getattr(sf_models, sf_model_name)
 
-    objects = model.objects.select_related('order')
+    objects = model.objects
     if updated_after:
         objects = objects.filter(updated__gte=updated_after)
 
