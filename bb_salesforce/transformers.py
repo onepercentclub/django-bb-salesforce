@@ -60,8 +60,8 @@ class MemberTransformer(BaseTransformer):
         'user_name': 'username',
         'email': EmailMapping('email'),
         'is_active': 'is_active',
-        'member_since': 'date_joined',
-        'date_joined': 'date_joined',
+        'member_since': DateTimeMapping('date_joined'),
+        'date_joined': DateTimeMapping('date_joined'), # Duplicate
         # 'deleted': 'deleted',
 
         'category1': ChoiceMapping('user_type'),
@@ -75,7 +75,7 @@ class MemberTransformer(BaseTransformer):
         'primary_language': 'primary_language',
         'receive_newsletter': 'newsletter',
         'phone': 'phone_number',
-        'birth_date': 'birthdate',
+        'birth_date': DateMapping('birthdate'),
         
         'gender': ChoiceMapping('gender'),
 
@@ -87,7 +87,7 @@ class MemberTransformer(BaseTransformer):
         'mailing_state': RelatedMapping('address.state'),
 
         'has_activated': 'is_active',
-        'last_login': 'last_login',
+        'last_login': DateTimeMapping('last_login'),
 
         'bank_account_city': RelatedMapping('monthlydonor.city'),
         'bank_account_iban': RelatedMapping('monthlydonor.iban'),

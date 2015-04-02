@@ -75,6 +75,11 @@ class IdentityMapping(Mapping):
 
     def to_csv(self):
         new_value = self.map()
+        if isinstance(new_value, bool):
+            if new_value:
+                return '1'
+            else:
+                return '0'
         if isinstance(new_value, int):
             new_value = str(new_value)
         if isinstance(new_value, unicode):
@@ -176,24 +181,17 @@ class DateTimeMapping(IdentityMapping):
     def to_csv(self):
         new_value = super(DateTimeMapping, self).to_csv()
         if new_value:
-            new_value.date().strftime(self.date_format)
-        return new_value
+            return new_value.strftime(self.date_format)
+        return ''
 
 
-class DateMapping(IdentityMapping):
+class DateMapping(DateTimeMapping):
     """
-    Return a Date (from datetime) with default None
+    Return a Date (from datetime) with default None/''
     """
 
-    def __init__(self, from_field=None, default=None):
-        self.default = default
-        super(DateMapping, self).__init__(from_field)
-
-    def map_value(self, old_value):
-        old_value = super(DateMapping, self).map_value(old_value)
-        if not old_value:
-            return self.default
-        return old_value.date()
+    def __init__(self, from_field=None, date_format="%Y-%m-%d", default=None):
+        super(DateMapping, self).__init__(from_field, date_format, default)
 
 
 class EuroMapping(IdentityMapping):
