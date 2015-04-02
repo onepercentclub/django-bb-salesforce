@@ -24,7 +24,7 @@ setup(
         'django-salesforce==0.5',
     ],
     tests_require=[
-        'factory-boy==2.0.0',
+        'factory-boy==2.3.1',
         'django-choices',
         'django-extensions==1.1.1',
         'django-nose==1.3',
