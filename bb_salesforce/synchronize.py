@@ -8,7 +8,6 @@ from django.conf import settings
 
 from bb_salesforce import models as sf_models
 from bb_salesforce import transformers
-from bb_salesforce import exporters
 
 
 def sync_model(model=None, logger=None, updated_after=None, only_new=False):
@@ -72,7 +71,7 @@ def export_model(model=None, logger=None, updated_after=None):
     sf_model_name = "Salesforce{0}".format(model.__name__)
     sf_model = getattr(sf_models, sf_model_name)
 
-    objects = model.objects
+    objects = model.objects.select_related('order')
     if updated_after:
         objects = objects.filter(updated__gte=updated_after)
 
@@ -96,7 +95,7 @@ def export_model(model=None, logger=None, updated_after=None):
 
         for obj in objects.all():
             t += 1
-            logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
+            logger.info("Exporting {0}  {1}/{2} [{3}] {4}".format(
                 model.__name__, t, objects.count(), obj.id, str(obj)))
             export_row = transformer(obj).to_csv()
             csv_writer.writerow(export_row)
@@ -111,11 +110,11 @@ def export_all(logger, updated_after=None):
     from bluebottle.fundraisers.models import Fundraiser
 
     export_model(Member, logger, updated_after)
-    # export_model(Organization, logger, updated_after)
-    # export_model(OrganizationMember, logger, updated_after)
-    # export_model(Project, logger, updated_after)
-    # export_model(ProjectBudgetLine, logger, updated_after)
-    # export_model(Fundraiser, logger, updated_after)
-    # export_model(Task, logger, updated_after)
-    # export_model(TaskMember, logger, updated_after)
+    export_model(Organization, logger, updated_after)
+    export_model(OrganizationMember, logger, updated_after)
+    export_model(Project, logger, updated_after)
+    export_model(ProjectBudgetLine, logger, updated_after)
+    export_model(Fundraiser, logger, updated_after)
+    export_model(Task, logger, updated_after)
+    export_model(TaskMember, logger, updated_after)
     export_model(Donation, logger, updated_after)

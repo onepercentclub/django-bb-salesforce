@@ -25,7 +25,7 @@ class OrganizationTransformer(BaseTransformer):
         'billing_state': CropMapping('state', 20),
         'billing_country': CountryMapping('country'),
 
-        'email': EmailMapping('email'),
+        'email_address': EmailMapping('email'),
         'phone': 'phone_number',
         'website': 'website',
         'twitter': 'twitter',
@@ -43,8 +43,7 @@ class OrganizationTransformer(BaseTransformer):
         'bank_address': 'account_bank_address',
         'bank_postalcode': 'account_bank_postal_code',
         'bank_city': 'account_bank_city',
-        
-        'account_bank_country': CountryMapping('account_bank_country'),
+        'bank_country': CountryMapping('account_bank_country'),
 
         'bank_account_number': 'account_number',
         'bank_bic_swift': 'account_bic',
@@ -63,9 +62,9 @@ class MemberTransformer(BaseTransformer):
         'is_active': 'is_active',
         'member_since': 'date_joined',
         'date_joined': 'date_joined',
-        'deleted': 'deleted',
+        # 'deleted': 'deleted',
 
-        'contact.category1': ChoiceMapping('user_type'),
+        'category1': ChoiceMapping('user_type'),
 
         'first_name':  'first_name',
         'last_name': StringMapping('last_name', default="Member"),

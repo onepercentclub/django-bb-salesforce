@@ -10,7 +10,6 @@ from django.db import transaction
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS, ObjectDoesNotExist
 from pytz.exceptions import AmbiguousTimeError
 from bb_salesforce.mappings import EmptyMapping
-from bb_salesforce.serializers import UnicodeSerializer, EmptySerializer
 from .mappings import IdentityMapping
 
 import logging
@@ -69,35 +68,3 @@ class BaseTransformer(object):
             mapping = self.get_mapping(field)
             value_list.append(mapping(self.from_instance).to_csv())
         return value_list
-
-
-
-class BaseExporter(object):
-
-    def get_serializer(self, field):
-        """
-        Get the mapping object for the specified field from `field_mapping`.
-        """
-        serializer = self.field_mapping.get(field)
-
-        if not serializer:
-            # If no string or serializer specified return empty string.
-            serializer = EmptySerializer('')
-        elif isinstance(serializer, basestring):
-            serializer = UnicodeSerializer(serializer)
-
-        # By this time serializer should be a callable yielding a dict
-        # assert callable(serializer), u'No forward serializer defined for serializer %s' % serializer
-        return serializer
-
-
-    def export(self, from_instance):
-
-        values = []
-        for field in self.field_mapping.iterkeys():
-            # Get the mapping
-            serializer = self.get_serializer(field)
-
-            values.append(serializer(from_instance))
-
-        return values
