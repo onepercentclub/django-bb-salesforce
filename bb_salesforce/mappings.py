@@ -23,7 +23,6 @@ class Mapping(object):
     def __repr__(self):
         return u'<%s>' % self.__class__.__name__
 
-
 class IdentityMapping(Mapping):
     """
     """
@@ -97,15 +96,15 @@ class StaticMapping(IdentityMapping):
         # from_field will just be a string here.
         return self.from_field
 
-class EmptyMapping(IdentityMapping):
 
+class EmptyMapping(IdentityMapping):
     def map_value(self, old_value):
         return ''
 
 
 class StringMapping(IdentityMapping):
     """
-    Identity mapping but for strings returns a default value when it is none.
+    Identity mapping but for strings returns a default value when it is none
     """
 
     def __init__(self, from_field=None, default=''):
@@ -115,6 +114,8 @@ class StringMapping(IdentityMapping):
     def map_value(self, old_value):
         old_value = super(StringMapping, self).map_value(old_value)
         if not old_value:
+            return self.default
+        if not old_value.strip():
             return self.default
         return old_value
 
@@ -151,14 +152,14 @@ class MethodMapping(IdentityMapping):
         return new_value
 
 
-class ImageMapping(StringMapping):
+class ImageMapping(IdentityMapping):
     """
     Return a image path.
     """
     def map_value(self, old_value):
         old_value = super(ImageMapping, self).map_value(old_value)
         if not old_value:
-            return self.default
+            return ''
         return str(old_value)
 
 
@@ -208,6 +209,19 @@ class EuroMapping(IdentityMapping):
             old_value = self.default
         return "%01.2f" % (old_value)
 
+class EuroCentMapping(IdentityMapping):
+    """
+    Return an amount in euro with default 0
+    """
+    def __init__(self, from_field=None, default=0):
+        self.default = default
+        super(EuroCentMapping, self).__init__(from_field)
+
+    def map_value(self, old_value):
+        old_value = super(EuroCentMapping, self).map_value(old_value)
+        if not old_value:
+            old_value = self.default
+        return "%01.2f" % (old_value / 100)
 
 class EmailMapping(StringMapping):
     """
@@ -266,17 +280,17 @@ class TagsMapping(StringMapping):
 
 class RelatedMapping(StringMapping):
     """
-    Gets the value of a related object or '' if it doesn't exist.
+    Gets the value of a related object or the default value if it doesn't exist.
     """
     def map(self):
         obj, field = self.from_field.split('.')
         if not hasattr(self.instance, obj):
-            return ''
+            return self.default
         related = getattr(self.instance, obj, None)
         if related:
             new_value = getattr(related, field, '')
             return new_value
-        return ''
+        return self.default
 
 
 class StreetMapping(StringMapping):
