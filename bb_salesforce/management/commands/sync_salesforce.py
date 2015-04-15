@@ -12,8 +12,8 @@ from ...synchronize import sync_all
 from bluebottle.clients.models import Client
 
 #
-# Run with:
-# ./manage.py sync_salesforce -v 2 --sync-updated 3600 --settings=bluebottle.settings.salesforcesync
+# Run with (example):
+# ./manage.py sync_salesforce -t onepercent -x -u 500 -v2
 #
 
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--log-to-salesforce', action='store_true', default=False, dest='log_to_salesforce',
-                    help='Tenant to sync or export'),
+                    help='Send the execution log to Salesforce'),
 
         make_option('--tenant', '-t', action='store', type='string', dest='tenant',
                     help='Tenant to sync or export'),
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         if options['log_to_salesforce']:
             logger = logging.getLogger('salesforce')
             fhndl = logging.handlers.RotatingFileHandler(
-                os.path.join( settings.PROJECT_ROOT,"salesforce", "log", "last.log"),
+                os.path.join(settings.PROJECT_ROOT,"salesforce", "log", "last.log"),
                 backupCount=5)
             formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
             fhndl.setFormatter(formatter)

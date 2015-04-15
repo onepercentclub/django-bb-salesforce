@@ -2,7 +2,7 @@ from bb_salesforce.mappings import (
     CropMapping, StringMapping, CountryMapping,
     ConcatenateMapping, EmailMapping, TagsMapping,
     ChoiceMapping, EmptyMapping, RelatedMapping, StreetMapping, ImageMapping,
-    SubRegionMapping, RegionMapping,DateTimeMapping, EuroMapping, MethodMapping,
+    SubRegionMapping, RegionMapping,DateTimeMapping, EuroMapping, EuroCentMapping, MethodMapping,
     RelatedObjectMapping, DateMapping, UserOrAnonymousMapping,
     StaticMapping, DonationStatusMapping,
     OrderPaymentMethodMapping)
@@ -15,93 +15,90 @@ from bb_salesforce.models import (
 class OrganizationTransformer(BaseTransformer):
 
     field_mapping = {
-        'external_id': 'id',
-        'name': 'name',
-        'billing_city': CropMapping('city', 40),
-        'billing_street': ConcatenateMapping(['address_line1',
-                                              'address_line2']),
+        'Organization_External_ID__c': 'id',
+        'Name': StringMapping('name', default="Organization"),
+        'BillingCity': CropMapping('city', 40),
+        'BillingStreet': ConcatenateMapping(['address_line1', 'address_line2']),
+        'BillingPostalCode': 'postal_code',
+        'BillingState': CropMapping('state', 20),
+        'BillingCountry': CountryMapping('country'),
 
-        'billing_postal_code': 'postal_code',
-        'billing_state': CropMapping('state', 20),
-        'billing_country': CountryMapping('country'),
+        'E_mail_address__c': EmailMapping('email'),
+        'Phone': 'phone_number',
+        'Website': 'website',
+        'Twitter__c': 'twitter',
+        'Facebook__c': 'facebook',
+        'Skype__c': 'skype',
+        'Tags__c': TagsMapping('tags'),
+        'Bank_account_name__c': 'account_holder_name',
 
-        'email_address': EmailMapping('email'),
-        'phone': 'phone_number',
-        'website': 'website',
-        'twitter': 'twitter',
-        'facebook': 'facebook',
-        'skype': 'skype',
-        'tags': TagsMapping('tags'),
-        'bank_account_name': 'account_holder_name',
+        'Bank_account_address__c': 'account_holder_address',
+        'Bank_account_postalcode__c': 'account_holder_postal_code',
+        'Bank_account_city__c': 'account_holder_city',
+        'Bank_account_country__c':  CountryMapping('account_holder_country'),
 
-        'bank_account_address': 'account_holder_address',
-        'bank_account_postalcode': 'account_holder_postal_code',
-        'bank_account_city': 'account_holder_city',
-        'bank_account_country':  CountryMapping('account_holder_country'),
+        'Bank_bankname__c':  'account_bank_name',
+        'Bank_address__c': 'account_bank_address',
+        'Bank_postalcode__c': 'account_bank_postal_code',
+        'Bank_city__c': 'account_bank_city',
+        'Bank_country__c': CountryMapping('account_bank_country'),
 
-        'bank_name':  'account_bank_name',
-        'bank_address': 'account_bank_address',
-        'bank_postalcode': 'account_bank_postal_code',
-        'bank_city': 'account_bank_city',
-        'bank_country': CountryMapping('account_bank_country'),
-
-        'bank_account_number': 'account_number',
-        'bank_bic_swift': 'account_bic',
-        'bank_account_iban': 'account_iban',
-        'created_date': 'created',
-        'deleted_date': 'deleted',
+        'Bank_account_number__c': 'account_number',
+        'Bank_SWIFT__c': 'account_bic',
+        'Bank_account_IBAN__c': 'account_iban',
+        'Organization_created_date__c': DateTimeMapping('created'),
+        'Deleted__c': DateTimeMapping('deleted'),
     }
 
 
 class MemberTransformer(BaseTransformer):
 
     field_mapping = {
-        'external_id': 'id',
-        'user_name': 'username',
-        'email': EmailMapping('email'),
-        'is_active': 'is_active',
-        'member_since': DateTimeMapping('date_joined'),
-        'date_joined': DateTimeMapping('date_joined'), # Duplicate
-        # 'deleted': 'deleted',
+        'Contact_External_ID__c': 'id',
+        'Username__c': 'username',
+        'Email': EmailMapping('email'),
+        'Active__c': 'is_active',
+        'Member_since__c': DateTimeMapping('date_joined'),
+        'Date_Joined__c': DateTimeMapping('date_joined'),   # Duplicate
+        'Deleted__c': DateTimeMapping('deleted'),
 
-        'category1': ChoiceMapping('user_type'),
+        'Category1__c': ChoiceMapping('user_type'),
 
-        'first_name':  'first_name',
-        'last_name': StringMapping('last_name', default="Member"),
+        'FirstName':  'first_name',
+        'LastName': StringMapping('last_name', default="Member"),
 
-        'location': 'location',
-        'picture_location': ImageMapping('picture'),
-        'about_me_us': 'about_me',
-        'primary_language': 'primary_language',
-        'receive_newsletter': 'newsletter',
-        'phone': 'phone_number',
-        'birth_date': DateMapping('birthdate'),
+        'Location__c': 'location',
+        'Picture_Location__c': ImageMapping('picture'),
+        # 'About_me_us__c': 'about_me',
+        'Primary_language__c': 'primary_language',
+        'Receive_newsletter__c': 'newsletter',
+        'Phone': 'phone_number',
+        'Birthdate': DateTimeMapping('birthdate'),
         
-        'gender': ChoiceMapping('gender'),
+        'Gender__c': ChoiceMapping('gender'),
 
-        'mailing_city': 'address.city',
-        'mailing_street': StreetMapping('address'),
+        'MailingCity': 'address.city',
+        'MailingStreet': StreetMapping('address'),
 
-        'mailing_country': CountryMapping('address.country'),
-        'mailing_postal_code': RelatedMapping('address.postal_code'),
-        'mailing_state': RelatedMapping('address.state'),
+        'MailingCountry': CountryMapping('address.country'),
+        'MailingPostalCode': RelatedMapping('address.postal_code'),
+        'MailingState': RelatedMapping('address.state'),
 
-        'has_activated': 'is_active',
-        'last_login': DateTimeMapping('last_login'),
+        'Has_Activated_Account__c': 'is_active',
+        'Date_Last_Login__c': DateTimeMapping('last_login'),
 
-        'bank_account_city': RelatedMapping('monthlydonor.city'),
-        'bank_account_iban': RelatedMapping('monthlydonor.iban'),
-        'bank_account_holder': RelatedMapping('monthlydonor.name'),
-        'bank_account_active_recurring_debit':
+        'Account_city__c': RelatedMapping('monthlydonor.city'),
+        'Account_IBAN__c': RelatedMapping('monthlydonor.iban'),
+        'Account_holder__c': RelatedMapping('monthlydonor.name'),
+        'Account_Active_Recurring_Debit__c':
             RelatedMapping('monthlydonor.active'),
 
-        # Removed fields
+        'Website__c':  'website',
+        'Facebook__c':  'facebook',
 
-        # 'bank_account_number':  NullMapping(),
-        # 'website':  NullMapping(),
+        # Removed fields
         # 'why_one_percent_member':  NullMapping(),
         # 'availability':  NullMapping(),
-        # 'facebook':  NullMapping(),
         # 'twitter':  NullMapping(),
         # 'skype':  NullMapping(),
         # 'tags': NullMapping(),
@@ -111,11 +108,11 @@ class MemberTransformer(BaseTransformer):
 class OrganizationMemberTransformer(BaseTransformer):
 
     field_mapping = {
-        'external_id': 'id',
-        'contact': RelatedObjectMapping('user', SalesforceMember),
-        'organization':
-            RelatedObjectMapping('organization',SalesforceOrganization),
-        'role': 'function'
+        'Organization_Member_External_Id__c': 'id',
+        'Contact__c': RelatedObjectMapping('user', SalesforceMember),
+        'Organization__c':
+            RelatedObjectMapping('organization', SalesforceOrganization),
+        'Role__c': 'function'
     }
 
 
@@ -123,74 +120,78 @@ class ProjectTransformer(BaseTransformer):
 
     field_mapping = {
 
-        'external_id': 'id',
-        'project_name': 'title',
-        'describe_the_project_in_one_sentence': CropMapping('pitch', 5000),
-        'video_url': 'video_url',
-        'is_campaign': 'is_campaign',
+        'Project_External_ID__c': 'id',
+        'Project_name__c': 'title',
+        # 'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000),
+        'VideoURL__c': 'video_url',
+        'Is_Campaign__c': 'is_campaign',
 
-        'amount_at_the_moment': EuroMapping('amount_donated'),
-        'amount_requested': EuroMapping('amount_asked'),
-        'amount_still_needed': EuroMapping('amount_needed'),
-        'donation_total':  EuroMapping('amount_donated'),
-        'donation_oo_total':  EuroMapping('amount_donated'),
+        'Amount_at_the_moment__c': EuroMapping('amount_donated'),
+        'Amount_requested__c': EuroMapping('amount_asked'),
+        'Amount_still_needed__c': EuroMapping('amount_needed'),
+        'Donation_total__c':  EuroMapping('amount_donated'),
+        'Donation_oo_total__c':  EuroMapping('amount_donated'),
 
-        'allow_overfunding': 'allow_overfunding',
-        'story': 'story',
+        'Allow_Overfunding__c': 'allow_overfunding',
+        # 'Story__c': 'story',
 
-        'picture_location': ImageMapping('image'),
+        'Picture_Location__c': ImageMapping('image'),
 
-        'date_project_deadline': DateTimeMapping('deadline'),
-        'project_created_date': DateTimeMapping('created'),
-        'project_updated_date': DateTimeMapping('updated'),
-        'date_plan_submitted': DateTimeMapping('date_submitted'),
-        'date_started': DateTimeMapping('campaign_started'),
-        'date_ended': DateTimeMapping('campaign_ended'),
-        'date_funded': DateTimeMapping('campaign_funded'),
+        'Date_project_deadline__c': DateTimeMapping('deadline'),
+        'Project_created_date__c': DateTimeMapping('created'),
+        'Project_updated_date__c': DateTimeMapping('updated'),
+        'Date_plan_submitted__c': DateTimeMapping('date_submitted'),
+        'Date_Started__c': DateTimeMapping('campaign_started'),
+        'Date_Ended__c': DateTimeMapping('campaign_ended'),
+        'Date_Funded__c': DateTimeMapping('campaign_funded'),
 
-        'country_in_which_the_project_is_located': CountryMapping('country'),
-        'sub_region': SubRegionMapping('country'),
-        'region': RegionMapping('country'),
-        'theme': RelatedMapping('theme.name'),
-        'status_project': RelatedMapping('status.name'),
+        'Country_in_which_the_project_is_located__c': CountryMapping('country'),
+        'Sub_region__c': SubRegionMapping('country'),
+        'Region__c': RegionMapping('country'),
+        'Theme__c': RelatedMapping('theme.name'),
+        'Status_project__c': RelatedMapping('status.name'),
 
-        'tags': TagsMapping('tags'),
-        'partner_organization': RelatedMapping('partner_organization.name'),
+        'Tags__c': TagsMapping('tags'),
+        'Partner_Organization__c': RelatedMapping('partner_organization.name', default="-"),
 
-        'slug': 'slug',
-        'supporter_count': MethodMapping('supporters_count'),
-        'supporter_oo_count': MethodMapping('supporters_count', True),
+        'Slug__c': 'slug',
+        'Supporter_count__c': MethodMapping('supporters_count'),
+        'Supporter_oo_count__c': MethodMapping('supporters_count', True),
 
-        'project_owner': RelatedObjectMapping('owner', SalesforceMember),
-        'organization_account':
+        'Project_Owner__c': RelatedObjectMapping('owner', SalesforceMember),
+        'Organization__c':
             RelatedObjectMapping('organization', SalesforceOrganization),
 
     }
 
+
 class FundraiserTransformer(BaseTransformer):
 
     field_mapping = {
-        'external_id': 'id',
-        'owner': RelatedObjectMapping('owner', SalesforceMember),
-        'project': RelatedObjectMapping('project', SalesforceProject),
-        'picture_location':  ImageMapping('image'),
-        'name': CropMapping('title', 80),
-        'description': 'description',
-        'video_url': 'video_url',
-        'amount':  EuroMapping('amount'),
-        'amount_at_the_moment': EuroMapping('amount_donated'),
-        'deadline': DateMapping('deadline'),
-        'created': DateTimeMapping('created'),
+        'Fundraiser_External_ID__c': 'id',
+        'Owner__c': RelatedObjectMapping('owner', SalesforceMember),
+        'Project__c': RelatedObjectMapping('project', SalesforceProject),
+        'Picture_Location__c':  ImageMapping('image'),
+        # 'Picture_Location__c': EmptyMapping('image'),
+        'Name': CropMapping('title', 80),
+        # 'Name': EmptyMapping('name'),
+        # 'Description__c': 'description',
+        'VideoURL__c': 'video_url',
+        # 'VideoURL__c': EmptyMapping('video_url'),
+        'Amount__c':  EuroMapping('amount'),
+        'Amount_at_the_moment__c': EuroMapping('amount_donated'),
+        'Deadline__c': DateTimeMapping('deadline'),
+        'Created__c': DateTimeMapping('created'),
     }
 
 
 class ProjectBudgetLineTransformer(BaseTransformer):
 
     field_mapping = {
-        'external_id': 'id',
-        'costs':  EuroMapping('amount'),
-        'description': 'description',
-        'project': RelatedObjectMapping('project', SalesforceProject)
+        'Project_Budget_External_ID__c': 'id',
+        'Costs__c':  EuroCentMapping('amount'),
+        'Description__c': 'description',
+        'Project__c': RelatedObjectMapping('project', SalesforceProject)
     }
 
 
@@ -208,7 +209,7 @@ class DonationTransformer(BaseTransformer):
 
         'stage_name': DonationStatusMapping('order'),
 
-        'close_date': DateTimeMapping('completed'),
+        'close_date': DateTimeMapping('created'),
         'donation_created_date': DateTimeMapping('created'),
         'donation_updated_date': DateTimeMapping('updated'),
         'donation_ready_date': DateTimeMapping('completed'),
@@ -231,7 +232,7 @@ class TaskTransformer(BaseTransformer):
         'deadline': DateTimeMapping('deadline'),
 
         'effort': 'time_needed',
-        'extended_task_description': 'description',
+        # 'extended_task_description': 'description',
         'location_of_the_task': 'location',
         'people_needed': 'people_needed',
         # 'end_goal': 'end_goal',
@@ -242,8 +243,7 @@ class TaskTransformer(BaseTransformer):
         'title': 'title',
         'task_created_date': DateTimeMapping('created'),
         'tags': TagsMapping('tags'),
-
-        # 'date_realized':
+        'date_realized': DateTimeMapping('date_realized'),
     }
 
 
@@ -254,7 +254,7 @@ class TaskMemberTransformer(BaseTransformer):
         'external_id': 'id',
         'contacts': RelatedObjectMapping('member', SalesforceMember),
         'x1_club_task': RelatedObjectMapping('task', SalesforceTask),
-        'motivation': 'motivation',
+        # 'motivation': 'motivation',
         'status': ChoiceMapping('status'),
         'taskmember_created_date': DateTimeMapping('created')
     }

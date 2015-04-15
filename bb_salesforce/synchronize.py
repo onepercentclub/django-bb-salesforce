@@ -28,7 +28,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
 
     for obj in objects.all():
         t += 1
-        logger.info("Syncing {0}  {1}/{2} [{3}] {4}".format(
+        logger.debug("Syncing {0}  {1}/{2} [{3}] {4}".format(
             model.__name__, t, objects.count(), obj.id, str(obj)))
         trans_object = transformer(obj).to_dict()
 
@@ -38,7 +38,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False):
                 external_id=trans_object['external_id'])
             new = False
         except sf_model.DoesNotExist:
-            sf_object  = sf_model(external_id=trans_object['external_id'])
+            sf_object = sf_model(external_id=trans_object['external_id'])
         for attr, value in trans_object.iteritems():
             setattr(sf_object, attr, value)
         if (only_new and new) or not only_new:
@@ -95,7 +95,7 @@ def export_model(model=None, logger=None, updated_after=None):
 
         for obj in objects.all():
             t += 1
-            logger.info("Exporting {0}  {1}/{2} [{3}] {4}".format(
+            logger.debug("Exporting {0}  {1}/{2} [{3}] {4}".format(
                 model.__name__, t, objects.count(), obj.id, str(obj)))
             export_row = transformer(obj).to_csv()
             csv_writer.writerow(export_row)

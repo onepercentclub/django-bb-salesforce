@@ -9,9 +9,7 @@ from django.utils.translation import ugettext as _
 
 class SalesforceOrganization(SalesforceModel):
     """
-    Default Salesforce Account model. For Onepercentclub the mapping is named Organization(s).
-    There are also other Salesforce models related to Account: AccountContactRole, AccountFeed, AccountHistory,
-                                                               AccountPartner, AccountShare
+    Default Salesforce Account model.
     """
     class AccountType(DjangoChoices):
         business = ChoiceItem('Business', label=_("Business"))
@@ -24,38 +22,38 @@ class SalesforceOrganization(SalesforceModel):
         government = ChoiceItem('Government & Politics', label=_("Individual"))
         media_pr = ChoiceItem('Media / PR', label=_("Media / PR"))
 
-    legal_status = models.CharField(max_length=10000, db_column='Legal_status__c')
-    name = models.CharField(max_length=255, db_column='Name')
-    organization_type = models.CharField(max_length=40, db_column="Type", choices=AccountType.choices,
+    Legal_status__c = models.CharField(max_length=10000, db_column='Legal_status__c')
+    Name = models.CharField(max_length=255, db_column='Name')
+    Type = models.CharField(max_length=40, db_column="Type", choices=AccountType.choices,
                                          help_text=("Type"))
-    external_id = models.CharField(max_length=255, db_column='Organization_External_ID__c')
-    billing_city = models.CharField(max_length=40, db_column='BillingCity')
-    billing_street = models.CharField(max_length=255, db_column='BillingStreet')
-    billing_postal_code = models.CharField(max_length=20, db_column='BillingPostalCode')
-    billing_country = models.CharField(max_length=80, db_column='BillingCountry')
-    billing_state = models.CharField(max_length=20, db_column='BillingState')
-    email_address = models.EmailField(max_length=80, db_column='E_mail_address__c')
-    phone = models.CharField(max_length=40, db_column='Phone')
-    website = models.URLField(max_length=255, db_column='Website')
-    bank_account_address = models.CharField(max_length=255, db_column='Bank_account_address__c')
-    bank_account_name = models.CharField(max_length=255, db_column='Bank_account_name__c')
-    bank_account_number = models.CharField(max_length=40, db_column='Bank_account_number__c')
-    bank_account_iban = models.CharField(max_length=255, db_column='Bank_account_IBAN__c')
-    bank_account_postalcode = models.CharField(max_length=20, db_column='Bank_account_postalcode__c')
-    bank_account_city = models.CharField(max_length=255, db_column='Bank_account_city__c')
-    bank_account_country = models.CharField(max_length=60, db_column='Bank_account_country__c')
-    bank_name = models.CharField(max_length=255, db_column='Bank_bankname__c')
-    bank_bic_swift = models.CharField(max_length=40, db_column='Bank_SWIFT__c')
-    bank_address = models.CharField(max_length=255, db_column='Bank_address__c')
-    bank_postalcode = models.CharField(max_length=20, db_column='Bank_postalcode__c')
-    bank_city = models.CharField(max_length=255, db_column='Bank_city__c')
-    bank_country = models.CharField(max_length=60, db_column='Bank_country__c')
-    twitter = models.CharField(max_length=255, db_column='Twitter__c')
-    facebook = models.CharField(max_length=255, db_column='Facebook__c')
-    tags = models.CharField(max_length=255, db_column='Tags__c')
-    skype = models.CharField(max_length=255, db_column='Skype__c')
-    created_date = models.DateField(db_column='Organization_created_date__c')
-    deleted_date = models.DateTimeField(db_column='Deleted__c')
+    Organization_External_ID__c = models.CharField(max_length=255, db_column='Organization_External_ID__c')
+    BillingCity = models.CharField(max_length=40, db_column='BillingCity')
+    BillingStreet = models.CharField(max_length=255, db_column='BillingStreet')
+    BillingPostalCode = models.CharField(max_length=20, db_column='BillingPostalCode')
+    BillingCountry = models.CharField(max_length=80, db_column='BillingCountry')
+    BillingState = models.CharField(max_length=20, db_column='BillingState')
+    E_mail_address__c = models.EmailField(max_length=80, db_column='E_mail_address__c')
+    Phone = models.CharField(max_length=40, db_column='Phone')
+    Website = models.URLField(max_length=255, db_column='Website')
+    Bank_account_address__c = models.CharField(max_length=255, db_column='Bank_account_address__c')
+    Bank_account_name__c = models.CharField(max_length=255, db_column='Bank_account_name__c')
+    Bank_account_number__c = models.CharField(max_length=40, db_column='Bank_account_number__c')
+    Bank_account_IBAN__c = models.CharField(max_length=255, db_column='Bank_account_IBAN__c')
+    Bank_account_postalcode__c = models.CharField(max_length=20, db_column='Bank_account_postalcode__c')
+    Bank_account_city__c = models.CharField(max_length=255, db_column='Bank_account_city__c')
+    Bank_account_country__c = models.CharField(max_length=60, db_column='Bank_account_country__c')
+    Bank_bankname__c = models.CharField(max_length=255, db_column='Bank_bankname__c')
+    Bank_SWIFT__c = models.CharField(max_length=40, db_column='Bank_SWIFT__c')
+    Bank_address__c = models.CharField(max_length=255, db_column='Bank_address__c')
+    Bank_postalcode__c = models.CharField(max_length=20, db_column='Bank_postalcode__c')
+    Bank_city__c = models.CharField(max_length=255, db_column='Bank_city__c')
+    Bank_country__c = models.CharField(max_length=60, db_column='Bank_country__c')
+    Twitter__c = models.CharField(max_length=255, db_column='Twitter__c')
+    Facebook__c = models.CharField(max_length=255, db_column='Facebook__c')
+    Tags__c = models.CharField(max_length=255, db_column='Tags__c')
+    Skype__c = models.CharField(max_length=255, db_column='Skype__c')
+    Organization_created_date__c = models.DateField(db_column='Organization_created_date__c')
+    Deleted__c = models.DateTimeField(db_column='Deleted__c')
 
     class Meta:
         db_table = 'Account'
@@ -66,51 +64,51 @@ class SalesforceMember(SalesforceModel):
     """
     Default Salesforce Contact model.
     """
-    category1 = models.CharField(max_length=255, db_column='Category1__c')
-    email = models.EmailField(max_length=80, db_column='Email')
-    member_1_club = models.BooleanField(db_column='Member_1_club__c', default=True)
-    user_name = models.CharField(max_length=255, db_column='Username__c')
-    is_active = models.BooleanField(db_column='Active__c')
-    has_activated = models.BooleanField(db_column='Has_Activated_Account__c')
-    deleted_date = models.DateField(db_column='Deleted__c')
-    first_name = models.CharField(max_length=40, db_column='FirstName')
-    last_name = models.CharField(max_length=80, db_column='LastName', null=False, blank=False)
-    member_since = models.DateField(db_column='Member_since__c')
-    why_one_percent_member = models.CharField(max_length=32000, db_column='Why_onepercent_member__c')
-    about_me_us = models.CharField(max_length=3200, db_column='About_me_us__c')
-    location = models.CharField(max_length=100, db_column='Location__c')
-    picture_location = models.CharField(max_length=255, db_column='Picture_Location__c')
-    website = models.CharField(max_length=255, db_column='Website__c')
-    last_login = models.DateTimeField(db_column='Date_Last_Login__c')
-    date_joined = models.DateTimeField(db_column='Date_Joined__c')
-    bank_account_number = models.CharField(max_length=30, db_column='Account_number__c')
-    bank_account_holder = models.CharField(max_length=60, db_column='Account_holder__c')
-    bank_account_city = models.CharField(max_length=50, db_column='Account_city__c')
-    bank_account_iban = models.CharField(max_length=40, db_column='Account_IBAN__c')
-    bank_account_active_recurring_debit = models.BooleanField(db_column='Account_Active_Recurring_Debit__c')
-    has_n_friends = models.CharField(max_length=255, db_column='Has_n_friends__c')
-    has_given_n_vouchers = models.CharField(max_length=255, db_column='Has_given_n_1_VOUCHERS__c')
-    number_of_donations = models.CharField(max_length=255, db_column='Number_of_donations__c')
-    support_n_projects = models.CharField(max_length=255, db_column='Support_n_projects__c')
-    total_amount_of_donations = models.CharField(max_length=255, db_column='Total_amount_of_donations__c')
-    birth_date = models.DateField(db_column='Birthdate')
-    gender = models.CharField(max_length=20, db_column='Gender__c')
-    mailing_city = models.CharField(max_length=40, db_column='MailingCity')
-    mailing_country = models.CharField(max_length=40, db_column='MailingCountry')
-    mailing_postal_code = models.CharField(max_length=20, db_column='MailingPostalCode')
-    mailing_street = models.CharField(max_length=20, db_column='MailingStreet')
-    mailing_state = models.CharField(max_length=80, db_column='MailingState')
-    phone = models.CharField(max_length=40, db_column='Phone')
-    facebook = models.CharField(max_length=50, db_column='Facebook__c')
-    twitter = models.CharField(max_length=250, db_column='Twitter__c')
-    skype = models.CharField(max_length=255, db_column='Skype__c')
-    available_time = models.CharField(max_length=255, db_column='Available_time__c')
-    where = models.CharField(max_length=255, db_column='Where__c')
-    availability = models.CharField(max_length=255, db_column='Availability__c')
-    receive_newsletter = models.BooleanField(db_column='Receive_newsletter__c')
-    primary_language = models.CharField(max_length=255, db_column='Primary_language__c')
-    external_id = models.CharField(max_length=255, db_column='Contact_External_ID__c')
-    tags = models.CharField(max_length=255, db_column='Tags__c')
+    Contact_External_ID__c = models.CharField(max_length=255, db_column='Contact_External_ID__c')
+    Username__c = models.CharField(max_length=255, db_column='Username__c')
+    Category1__c = models.CharField(max_length=255, db_column='Category1__c')
+    Email = models.EmailField(max_length=80, db_column='Email')
+    Member_1_club__c = models.BooleanField(db_column='Member_1_club__c', default=True)
+    Active__c = models.BooleanField(db_column='Active__c')
+    Has_Activated_Account__c = models.BooleanField(db_column='Has_Activated_Account__c')
+    Deleted__c = models.DateField(db_column='Deleted__c')
+    FirstName = models.CharField(max_length=40, db_column='FirstName')
+    LastName = models.CharField(max_length=80, db_column='LastName', null=False, blank=False)
+    Member_since__c = models.DateField(db_column='Member_since__c')
+    Why_onepercent_member__c = models.CharField(max_length=32000, db_column='Why_onepercent_member__c')
+    About_me_us__c = models.CharField(max_length=3200, db_column='About_me_us__c')
+    Location__c = models.CharField(max_length=100, db_column='Location__c')
+    Picture_Location__c = models.CharField(max_length=255, db_column='Picture_Location__c')
+    Website__c = models.CharField(max_length=255, db_column='Website__c')
+    Date_Last_Login__c = models.DateTimeField(db_column='Date_Last_Login__c')
+    Date_Joined__c = models.DateTimeField(db_column='Date_Joined__c')
+    Account_number__c = models.CharField(max_length=30, db_column='Account_number__c')
+    Account_holder__c = models.CharField(max_length=60, db_column='Account_holder__c')
+    Account_city__c = models.CharField(max_length=50, db_column='Account_city__c')
+    Account_IBAN__c = models.CharField(max_length=40, db_column='Account_IBAN__c')
+    Account_Active_Recurring_Debit__c = models.BooleanField(db_column='Account_Active_Recurring_Debit__c')
+    Has_n_friends__c = models.CharField(max_length=255, db_column='Has_n_friends__c')
+    Has_given_n_1_VOUCHERS__c = models.CharField(max_length=255, db_column='Has_given_n_1_VOUCHERS__c')
+    Number_of_donations__c = models.CharField(max_length=255, db_column='Number_of_donations__c')
+    Support_n_projects__c = models.CharField(max_length=255, db_column='Support_n_projects__c')
+    Total_amount_of_donations__c = models.CharField(max_length=255, db_column='Total_amount_of_donations__c')
+    Birthdate = models.DateField(db_column='Birthdate')
+    Gender__c = models.CharField(max_length=20, db_column='Gender__c')
+    MailingCity = models.CharField(max_length=40, db_column='MailingCity')
+    MailingCountry = models.CharField(max_length=40, db_column='MailingCountry')
+    MailingPostalCode = models.CharField(max_length=20, db_column='MailingPostalCode')
+    MailingStreet = models.CharField(max_length=20, db_column='MailingStreet')
+    MailingState = models.CharField(max_length=80, db_column='MailingState')
+    Phone = models.CharField(max_length=40, db_column='Phone')
+    Facebook__c = models.CharField(max_length=50, db_column='Facebook__c')
+    Twitter__c = models.CharField(max_length=250, db_column='Twitter__c')
+    Skype__c = models.CharField(max_length=255, db_column='Skype__c')
+    Available_time__c = models.CharField(max_length=255, db_column='Available_time__c')
+    Where__c = models.CharField(max_length=255, db_column='Where__c')
+    Availability__c = models.CharField(max_length=255, db_column='Availability__c')
+    Receive_newsletter__c = models.BooleanField(db_column='Receive_newsletter__c')
+    Primary_language__c = models.CharField(max_length=255, db_column='Primary_language__c')
+    Tags__c = models.CharField(max_length=255, db_column='Tags__c')
 
     class Meta:
         db_table = 'Contact'
@@ -127,74 +125,74 @@ class SalesforceProject(SalesforceModel):
         done = ChoiceItem('Done', label=_("Done"))
         validated = ChoiceItem('Validated', label=_("Validated"))
 
-    amount_at_the_moment = models.CharField(max_length=255, db_column='Amount_at_the_moment__c')
-    amount_requested = models.CharField(max_length=255, db_column='Amount_requested__c')
-    amount_still_needed = models.CharField(max_length=255, db_column='Amount_still_needed__c')
-    project_name = models.CharField(max_length=80, db_column='Project_name__c')
-    project_owner = models.ForeignKey(SalesforceMember, db_column='Project_Owner__c')
-    status_project = models.CharField(max_length=255,
+    Amount_at_the_moment__c = models.CharField(max_length=255, db_column='Amount_at_the_moment__c')
+    Amount_requested__c = models.CharField(max_length=255, db_column='Amount_requested__c')
+    Amount_still_needed__c = models.CharField(max_length=255, db_column='Amount_still_needed__c')
+    Project_name__c = models.CharField(max_length=80, db_column='Project_name__c')
+    Project_Owner__c = models.ForeignKey(SalesforceMember, db_column='Project_Owner__c')
+    Status_project__c = models.CharField(max_length=255,
                                       db_column='Status_project__c',
                                       choices=ProjectStatus.choices,
                                       help_text=_("Status project"))
-    target_group_s_of_the_project = models.CharField(max_length=20000, db_column='Target_group_s_of_the_project__c')
-    country_in_which_the_project_is_located = models.CharField(max_length=255,
+    Target_group_s_of_the_project__c = models.CharField(max_length=20000, db_column='Target_group_s_of_the_project__c')
+    Country_in_which_the_project_is_located__c = models.CharField(max_length=255,
                                                                db_column='Country_in_which_the_project_is_located__c')
-    region = models.CharField(max_length=100, db_column='Region__c')
-    sub_region = models.CharField(max_length=100, db_column='Sub_region__c')
-    describe_the_project_in_one_sentence = models.CharField(max_length=50000,
+    Region__c = models.CharField(max_length=100, db_column='Region__c')
+    Sub_region__c = models.CharField(max_length=100, db_column='Sub_region__c')
+    Describe_the_project_in_one_sentence__c = models.CharField(max_length=50000,
                                                             db_column='Describe_the_project_in_one_sentence__c')
-    story = models.CharField(max_length=32768, db_column='Story__c')
-    third_half_project = models.BooleanField(db_column='third_half_project__c', default=False)
-    organization_account = models.ForeignKey(SalesforceOrganization, db_column='Organization__c', null=True)
-    comments = models.CharField(max_length=32000, db_column='Comments__c')
-    contribution_project_in_reducing_poverty = models.CharField(max_length=32000,
+    Story__c = models.CharField(max_length=32768, db_column='Story__c')
+    third_half_project__c = models.BooleanField(db_column='third_half_project__c', default=False)
+    Organization__c = models.ForeignKey(SalesforceOrganization, db_column='Organization__c', null=True)
+    Comments__c = models.CharField(max_length=32000, db_column='Comments__c')
+    Contribution_project_in_reducing_poverty__c = models.CharField(max_length=32000,
                                                                 db_column='Contribution_project_in_reducing_poverty__c')
-    earth_charther_project = models.BooleanField(db_column='Earth_Charther_project__c', default=False)
-    sustainability = models.CharField(max_length=20000, db_column='Sustainability__c')
-    additional_explanation_of_budget = models.CharField(max_length=32000,
+    Earth_Charther_project__c = models.BooleanField(db_column='Earth_Charther_project__c', default=False)
+    Sustainability__c = models.CharField(max_length=20000, db_column='Sustainability__c')
+    Additional_explanation_of_budget__c = models.CharField(max_length=32000,
                                                         db_column='Additional_explanation_of_budget__c')
-    tags = models.CharField(max_length=255, db_column='Tags__c')
-    slug = models.CharField(max_length=100, db_column='Slug__c')
-    partner_organization = models.CharField(max_length=255, db_column='Partner_Organization__c')
-    video_url = models.CharField(max_length=255, db_column='VideoURL__c')
-    picture_location = models.CharField(max_length=255, db_column='Picture_Location__c')
-    date_started = models.DateField(db_column='Date_Started__c')
-    date_funded = models.DateField(db_column='Date_Funded__c')
-    date_ended = models.DateField(db_column='Date_Ended__c')
-    is_campaign = models.BooleanField(db_column='Is_Campaign__c')
-    allow_overfunding = models.BooleanField(db_column='Allow_Overfunding__c')
-    name_referral_1 = models.CharField(max_length=255, db_column='Name_referral_1__c')
-    name_referral_2 = models.CharField(max_length=255, db_column='Name_referral_2__c')
-    name_referral_3 = models.CharField(max_length=255, db_column='Name_referral_3__c')
-    description_referral_1 = models.CharField(max_length=32000, db_column='Description_referral_1__c')
-    description_referral_2 = models.CharField(max_length=32000, db_column='Description_referral_2__c')
-    description_referral_3 = models.CharField(max_length=32000, db_column='Description_referral_3__c')
-    email_address_referral_1 = models.EmailField(max_length=80, blank=True, null=True,
+    Tags__c = models.CharField(max_length=255, db_column='Tags__c')
+    Slug__c = models.CharField(max_length=100, db_column='Slug__c')
+    Partner_Organization__c = models.CharField(max_length=255, db_column='Partner_Organization__c')
+    VideoURL__c = models.CharField(max_length=255, db_column='VideoURL__c')
+    Picture_Location__c = models.CharField(max_length=255, db_column='Picture_Location__c')
+    Date_Started__c = models.DateField(db_column='Date_Started__c')
+    Date_Funded__c = models.DateField(db_column='Date_Funded__c')
+    Date_Ended__c = models.DateField(db_column='Date_Ended__c')
+    Is_Campaign__c = models.BooleanField(db_column='Is_Campaign__c')
+    Allow_Overfunding__c = models.BooleanField(db_column='Allow_Overfunding__c')
+    Name_referral_1__c = models.CharField(max_length=255, db_column='Name_referral_1__c')
+    Name_referral_2__c = models.CharField(max_length=255, db_column='Name_referral_2__c')
+    Name_referral_3__c = models.CharField(max_length=255, db_column='Name_referral_3__c')
+    Description_referral_1__c = models.CharField(max_length=32000, db_column='Description_referral_1__c')
+    Description_referral_2__c = models.CharField(max_length=32000, db_column='Description_referral_2__c')
+    Description_referral_3__c = models.CharField(max_length=32000, db_column='Description_referral_3__c')
+    E_mail_address_referral_1__c = models.EmailField(max_length=80, blank=True, null=True,
                                                  db_column='E_mail_address_referral_1__c')
-    email_address_referral_2 = models.EmailField(max_length=80, blank=True, null=True,
+    E_mail_address_referral_2__c = models.EmailField(max_length=80, blank=True, null=True,
                                                  db_column='E_mail_address_referral_2__c')
-    email_address_referral_3 = models.EmailField(max_length=80, blank=True, null=True,
+    E_mail_address_referral_3__c = models.EmailField(max_length=80, blank=True, null=True,
                                                  db_column='E_mail_address_referral_3__c')
-    relation_referral_1_with_project_org = models.CharField(max_length=32000,
+    Relation_referral_1_with_project_org__c = models.CharField(max_length=32000,
                                                             db_column='Relation_referral_1_with_project_org__c')
-    relation_referral_2_with_project_org = models.CharField(max_length=32000,
+    Relation_referral_2_with_project_org__c = models.CharField(max_length=32000,
                                                             db_column='Relation_referral_2_with_project_org__c')
-    relation_referral_3_with_project_org = models.CharField(max_length=32000,
+    Relation_referral_3_with_project_org__c = models.CharField(max_length=32000,
                                                             db_column='Relation_referral_3_with_project_org__c')
-    date_plan_submitted = models.DateField(db_column='Date_plan_submitted__c')
-    project_created_date = models.DateTimeField(db_column='Project_created_date__c')
-    project_updated_date = models.DateTimeField(db_column='Project_updated_date__c')
-    date_project_deadline = models.DateField(db_column='Date_project_deadline__c')
-    external_id = models.CharField(max_length=255, db_column='Project_External_ID__c')
-    number_of_people_reached_direct = models.PositiveIntegerField(max_length=18,
+    Date_plan_submitted__c = models.DateField(db_column='Date_plan_submitted__c')
+    Project_created_date__c = models.DateTimeField(db_column='Project_created_date__c')
+    Project_updated_date__c = models.DateTimeField(db_column='Project_updated_date__c')
+    Date_project_deadline__c = models.DateField(db_column='Date_project_deadline__c')
+    Project_External_ID__c = models.CharField(max_length=255, db_column='Project_External_ID__c')
+    NumberOfPeopleReachedDirect__c = models.PositiveIntegerField(max_length=18,
                                                                   db_column='NumberOfPeopleReachedDirect__c')
-    number_of_people_reached_indirect = models.PositiveIntegerField(max_length=18,
+    NumberOfPeopleReachedIndirect__c = models.PositiveIntegerField(max_length=18,
                                                                   db_column='NumberOfPeopleReachedIndirect__c')
-    theme = models.CharField(max_length=255, db_column='Theme__c')
-    donation_total = models.CharField(max_length=20, db_column='Donation_total__c')
-    supporter_count = models.PositiveIntegerField(max_length=8, db_column='Supporter_count__c')
-    donation_oo_total = models.CharField(max_length=20, db_column='Donation_oo_total__c')
-    supporter_oo_count = models.PositiveIntegerField(max_length=8, db_column='Supporter_oo_count__c')
+    Theme__c = models.CharField(max_length=255, db_column='Theme__c')
+    Donation_total__c = models.CharField(max_length=20, db_column='Donation_total__c')
+    Supporter_count__c = models.PositiveIntegerField(max_length=8, db_column='Supporter_count__c')
+    Donation_oo_total__c = models.CharField(max_length=20, db_column='Donation_oo_total__c')
+    Supporter_oo_count__c = models.PositiveIntegerField(max_length=8, db_column='Supporter_oo_count__c')
 
     class Meta:
         db_table = 'Project__c'
@@ -205,10 +203,10 @@ class SalesforceProjectBudgetLine(SalesforceModel):
     """
     Custom Salesforce Project_Budget__c model. For Onepercentclub the mapping is named Project Budget.
     """
-    costs = models.CharField(max_length=255, db_column='Costs__c')
-    description = models.CharField(max_length=32000, db_column='Description__c')
-    external_id = models.CharField(max_length=255, db_column='Project_Budget_External_ID__c')
-    project = models.ForeignKey(SalesforceProject, db_column='Project__c')
+    Costs__c = models.CharField(max_length=255, db_column='Costs__c')
+    Description__c = models.CharField(max_length=32000, db_column='Description__c')
+    Project_Budget_External_ID__c = models.CharField(max_length=255, db_column='Project_Budget_External_ID__c')
+    Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c')
 
     class Meta:
         db_table = 'Project_Budget__c'
@@ -219,17 +217,17 @@ class SalesforceFundraiser(SalesforceModel):
     """
     Custom Fundraiser__c model.
     """
-    amount = models.CharField(max_length=100, db_column='Amount__c')
-    owner = models.ForeignKey(SalesforceMember, db_column='Owner__c')
-    created = models.DateTimeField(db_column='Created__c')
-    deadline = models.DateField(db_column='Deadline__c')
-    description = models.CharField(max_length=131072, db_column='Description__c')
-    external_id = models.CharField(max_length=255, db_column='Fundraiser_External_ID__c')
-    picture_location = models.CharField(max_length=255, db_column='Picture_Location__c')
-    project = models.ForeignKey(SalesforceProject, db_column='Project__c')
-    video_url = models.CharField(max_length=255, db_column='VideoURL__c')
-    name = models.CharField(max_length=80, db_column='Name')
-    amount_at_the_moment = models.CharField(max_length=100, db_column='Amount_at_the_moment__c')
+    Amount__c = models.CharField(max_length=100, db_column='Amount__c')
+    Owner__c = models.ForeignKey(SalesforceMember, db_column='Owner__c')
+    Created__c = models.DateTimeField(db_column='Created__c')
+    Deadline__c = models.DateField(db_column='Deadline__c')
+    Description__c = models.CharField(max_length=131072, db_column='Description__c')
+    Fundraiser_External_ID__c = models.CharField(max_length=255, db_column='Fundraiser_External_ID__c')
+    Picture_Location__c = models.CharField(max_length=255, db_column='Picture_Location__c')
+    Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c')
+    VideoURL__c = models.CharField(max_length=255, db_column='VideoURL__c')
+    Name = models.CharField(max_length=80, db_column='Name')
+    Amount_at_the_moment__c = models.CharField(max_length=100, db_column='Amount_at_the_moment__c')
 
     class Meta:
         db_table = 'Fundraiser__c'
@@ -342,10 +340,10 @@ class SalesforceOrganizationMember(SalesforceModel):
     Custom Salesforce Organization_Member__c object.
     The object is used as a junction object that connects Account and Contact.
     """
-    contact = models.ForeignKey(SalesforceMember, db_column='Contact__c')
-    organization = models.ForeignKey(SalesforceOrganization, db_column='Organization__c')
-    role = models.CharField(max_length=20, db_column='Role__c')
-    external_id = models.CharField(max_length=100, db_column='Organization_Member_External_Id__c')
+    Contact__c = models.ForeignKey(SalesforceMember, db_column='Contact__c')
+    Organization__c = models.ForeignKey(SalesforceOrganization, db_column='Organization__c')
+    Role__c = models.CharField(max_length=20, db_column='Role__c')
+    Organization_Member_External_Id__c = models.CharField(max_length=100, db_column='Organization_Member_External_Id__c')
 
     class Meta:
         db_table = 'Organization_Member__c'
