@@ -17,6 +17,8 @@ from django.core.files import File
 
 from django.template.defaultfilters import slugify
 
+from bluebottle.payments.models import OrderPayment
+
 class Mapping(object):
     """ Base class for mappings. """
 
@@ -422,6 +424,33 @@ class RelatedObjectMapping(IdentityMapping):
         return related_id
 
 
+class UserDonorMapping(IdentityMapping):
+    """
+    Map to a related object id (to_csv) or Salesforce object (to_field).
+    """
+
+    def __init__(self, from_field=None, sf_model=None):
+        self.sf_model = sf_model
+        super(UserDonorMapping, self).__init__(from_field)
+
+    def to_field(self):
+        order = getattr(self.instance, 'order')
+        related_id = order.user_id
+        if not related_id:
+            return None
+
+        # Somtimes it somehow returns multiple objects.
+        objs = self.sf_model.objects.filter(external_id=related_id).all()
+        if objs.count():
+            sf_object = objs[0]
+            return sf_object
+        return None
+
+    def to_csv(self):
+        related_id = self.get_field(self.instance, '{0}_id'.format(self.from_field))
+        return related_id
+
+
 class OrderPaymentMethodMapping(StringMapping):
     """
     Returns the payment method based on an order
@@ -429,10 +458,13 @@ class OrderPaymentMethodMapping(StringMapping):
 
     def map_value(self, old_value):
         order = super(StringMapping, self).map_value(old_value)
-        if hasattr(order, 'order_payment'):
-            new_value = order.order_payment.method_name
+        lp = OrderPayment.get_latest_by_order(order)
+        if order and lp:
+            new_value = lp.payment_method
+            if(lp.payment_method.startswith("docdata")):
+                new_value = lp.payment_method[7:]
             return new_value
-        return ''
+        return self.default
 
 
 class DonationStatusMapping(StringMapping):

@@ -26,7 +26,7 @@ class SalesforceOrganization(SalesforceModel):
     Name = models.CharField(max_length=255, db_column='Name')
     Type = models.CharField(max_length=40, db_column="Type", choices=AccountType.choices,
                                          help_text=("Type"))
-    Organization_External_ID__c = models.CharField(max_length=255, db_column='Organization_External_ID__c')
+    external_id = models.CharField(max_length=255, db_column='Organization_External_ID__c')
     BillingCity = models.CharField(max_length=40, db_column='BillingCity')
     BillingStreet = models.CharField(max_length=255, db_column='BillingStreet')
     BillingPostalCode = models.CharField(max_length=20, db_column='BillingPostalCode')
@@ -64,7 +64,7 @@ class SalesforceMember(SalesforceModel):
     """
     Default Salesforce Contact model.
     """
-    Contact_External_ID__c = models.CharField(max_length=255, db_column='Contact_External_ID__c')
+    external_id = models.CharField(max_length=255, db_column='Contact_External_ID__c')
     Username__c = models.CharField(max_length=255, db_column='Username__c')
     Category1__c = models.CharField(max_length=255, db_column='Category1__c')
     Email = models.EmailField(max_length=80, db_column='Email')
@@ -115,6 +115,14 @@ class SalesforceMember(SalesforceModel):
         managed = False
 
 
+class SalesforceCountry(SalesforceModel):
+    external_id = models.CharField(max_length=255, db_column='External_Id__c')
+
+    class Meta:
+        db_table = 'Country__c'
+        managed = False
+
+
 class SalesforceProject(SalesforceModel):
     """
     Custom Salesforce Project__c model. For Onepercentclub the mapping is named 1%CLUB Project(s).
@@ -137,6 +145,7 @@ class SalesforceProject(SalesforceModel):
     Target_group_s_of_the_project__c = models.CharField(max_length=20000, db_column='Target_group_s_of_the_project__c')
     Country_in_which_the_project_is_located__c = models.CharField(max_length=255,
                                                                db_column='Country_in_which_the_project_is_located__c')
+    Country__c = models.ForeignKey(SalesforceCountry, db_column='Country__c')
     Region__c = models.CharField(max_length=100, db_column='Region__c')
     Sub_region__c = models.CharField(max_length=100, db_column='Sub_region__c')
     Describe_the_project_in_one_sentence__c = models.CharField(max_length=50000,
@@ -183,7 +192,7 @@ class SalesforceProject(SalesforceModel):
     Project_created_date__c = models.DateTimeField(db_column='Project_created_date__c')
     Project_updated_date__c = models.DateTimeField(db_column='Project_updated_date__c')
     Date_project_deadline__c = models.DateField(db_column='Date_project_deadline__c')
-    Project_External_ID__c = models.CharField(max_length=255, db_column='Project_External_ID__c')
+    external_id = models.CharField(max_length=255, db_column='Project_External_ID__c')
     NumberOfPeopleReachedDirect__c = models.PositiveIntegerField(max_length=18,
                                                                   db_column='NumberOfPeopleReachedDirect__c')
     NumberOfPeopleReachedIndirect__c = models.PositiveIntegerField(max_length=18,
@@ -205,7 +214,7 @@ class SalesforceProjectBudgetLine(SalesforceModel):
     """
     Costs__c = models.CharField(max_length=255, db_column='Costs__c')
     Description__c = models.CharField(max_length=32000, db_column='Description__c')
-    Project_Budget_External_ID__c = models.CharField(max_length=255, db_column='Project_Budget_External_ID__c')
+    external_id = models.CharField(max_length=255, db_column='Project_Budget_External_ID__c')
     Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c')
 
     class Meta:
@@ -222,7 +231,7 @@ class SalesforceFundraiser(SalesforceModel):
     Created__c = models.DateTimeField(db_column='Created__c')
     Deadline__c = models.DateField(db_column='Deadline__c')
     Description__c = models.CharField(max_length=131072, db_column='Description__c')
-    Fundraiser_External_ID__c = models.CharField(max_length=255, db_column='Fundraiser_External_ID__c')
+    external_id = models.CharField(max_length=255, db_column='Fundraiser_External_ID__c')
     Picture_Location__c = models.CharField(max_length=255, db_column='Picture_Location__c')
     Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c')
     VideoURL__c = models.CharField(max_length=255, db_column='VideoURL__c')
@@ -238,17 +247,17 @@ class SalesforceOpportunity(SalesforceModel):
     """
     Default abstract Salesforce Opportunity model. Used for Donation(s) / Voucher(s).
     """
-    amount = models.CharField(max_length=255, db_column='Amount')
-    close_date = models.DateField(db_column='CloseDate')
-    type = models.CharField(max_length=40, db_column='Type')
-    name = models.CharField(max_length=120, db_column='Name')
-    payment_method = models.CharField(max_length=255,
+    Amount = models.CharField(max_length=255, db_column='Amount')
+    CloseDate = models.DateField(db_column='CloseDate')
+    Type = models.CharField(max_length=40, db_column='Type')
+    Name = models.CharField(max_length=120, db_column='Name')
+    Payment_method__c = models.CharField(max_length=255,
                                       db_column='Payment_method__c',
                                       help_text=_("PaymentMethod"))
-    project = models.ForeignKey(SalesforceProject, db_column='Project__c', null=True)
-    stage_name = models.CharField(max_length=40,
+    Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c', null=True)
+    StageName = models.CharField(max_length=40,
                                   db_column='StageName')
-    record_type = models.CharField(max_length=255, db_column='RecordTypeId')
+    RecordTypeId = models.CharField(max_length=255, db_column='RecordTypeId')
 
     class Meta:
         abstract = True
@@ -260,12 +269,12 @@ class SalesforceDonation(SalesforceOpportunity):
     Child of the Opportunity for Onepercentclub the mapping is named Donation(s).
     """
 
-    donation_created_date = models.DateTimeField(db_column='Donation_created_date__c')
-    donation_updated_date = models.DateTimeField(db_column='Donation_updated_date__c')
-    donation_ready_date = models.DateTimeField(db_column='Donation_ready_date__c')
-    external_id_donation = models.CharField(max_length=255, db_column='Donation_External_ID__c')
-    donor = models.ForeignKey(SalesforceMember, db_column='Receiver__c', null=True)
-    fundraiser = models.ForeignKey(SalesforceFundraiser, db_column='Fundraiser__c', null=True)
+    Donation_created_date__c = models.DateTimeField(db_column='Donation_created_date__c')
+    Donation_updated_date__c = models.DateTimeField(db_column='Donation_updated_date__c')
+    Donation_ready_date__c = models.DateTimeField(db_column='Donation_ready_date__c')
+    external_id = models.CharField(max_length=255, db_column='Donation_External_ID__c')
+    Receiver__c = models.ForeignKey(SalesforceMember, db_column='Receiver__c', null=True)
+    Fundraiser__c = models.ForeignKey(SalesforceFundraiser, db_column='Fundraiser__c', null=True)
 
     class Meta:
         managed = False
@@ -276,10 +285,10 @@ class SalesforceVoucher(SalesforceOpportunity):
     """
     Child of the Opportunity for Onepercentclub the mapping is named Voucher(s).
     """
-    purchaser = models.ForeignKey(SalesforceMember, db_column='Purchaser__c', related_name='contact_purchasers')
-    description = models.CharField(max_length=32000, db_column='Description')
-    receiver = models.ForeignKey(SalesforceMember, db_column='Receiver__c', related_name='contact_receivers', null=True)
-    external_id_voucher = models.CharField(max_length=255, db_column='Voucher_External_ID__c')
+    Purchaser__c = models.ForeignKey(SalesforceMember, db_column='Purchaser__c', related_name='contact_purchasers')
+    Description = models.CharField(max_length=32000, db_column='Description')
+    Receiver__c = models.ForeignKey(SalesforceMember, db_column='Receiver__c', related_name='contact_receivers', null=True)
+    external_id = models.CharField(max_length=255, db_column='Voucher_External_ID__c')
 
     class Meta:
         managed = False
@@ -296,20 +305,20 @@ class SalesforceTask(SalesforceModel):
         closed = ChoiceItem('Closed', label=_("Closed"))
         realized = ChoiceItem('Realized', label=_("Realized"))
 
-    project = models.ForeignKey(SalesforceProject, db_column='Project__c')
-    deadline = models.DateField(db_column='Deadline__c')
-    effort = models.CharField(max_length=200, db_column='Effort__c')
-    extended_task_description = models.CharField(max_length=32000, db_column='Extended_task_description__c')
-    location_of_the_task = models.CharField(max_length=200, db_column='Location_of_the_task__c')
-    task_expertise = models.CharField(max_length=100, db_column='Task_expertise__c')
-    task_status = models.CharField(max_length=40, db_column='Task_status__c', choices=TaskStatus.choices, help_text=_("TaskStatus"))
-    title = models.CharField(max_length=100, db_column='Title__c')
-    task_created_date = models.DateField(db_column='Task_created_date__c')
-    tags = models.CharField(max_length=255, db_column='Tags__c')
-    date_realized = models.DateField(db_column='Date_realized__c')
-    author = models.ForeignKey(SalesforceMember, db_column='Author__c')
-    people_needed = models.CharField(max_length=10, db_column='People_Needed__c')
-    end_goal = models.CharField(max_length=5000, db_column='End_Goal__c')
+    Project__c = models.ForeignKey(SalesforceProject, db_column='Project__c')
+    Deadline__c = models.DateField(db_column='Deadline__c')
+    Effort__c = models.CharField(max_length=200, db_column='Effort__c')
+    Extended_task_description__c = models.CharField(max_length=32000, db_column='Extended_task_description__c')
+    Location_of_the_task__c = models.CharField(max_length=200, db_column='Location_of_the_task__c')
+    Task_expertise__c = models.CharField(max_length=100, db_column='Task_expertise__c')
+    Task_status__c = models.CharField(max_length=40, db_column='Task_status__c', choices=TaskStatus.choices, help_text=_("TaskStatus"))
+    Title__c = models.CharField(max_length=100, db_column='Title__c')
+    Task_created_date__c = models.DateField(db_column='Task_created_date__c')
+    Tags__c = models.CharField(max_length=255, db_column='Tags__c')
+    Date_realized__c = models.DateField(db_column='Date_realized__c')
+    Author__c = models.ForeignKey(SalesforceMember, db_column='Author__c')
+    People_Needed__c = models.CharField(max_length=10, db_column='People_Needed__c')
+    End_Goal__c = models.CharField(max_length=5000, db_column='End_Goal__c')
 
     external_id = models.CharField(max_length=255, db_column='Task_External_ID__c')
 
@@ -323,12 +332,12 @@ class SalesforceTaskMember(SalesforceModel):
     Custom Salesforce Task_Members__c model. For Onepercentclub the mapping is named Task Member(s).
     The table is used as a joined table which relates to Tasks to the Contacts.
     """
-    contacts = models.ForeignKey(SalesforceMember, db_column='Contacts__c')
-    x1_club_task = models.ForeignKey(SalesforceTask, db_column='X1_CLUB_Task__c')
+    Contacts__c = models.ForeignKey(SalesforceMember, db_column='Contacts__c')
+    X1_CLUB_Task__c = models.ForeignKey(SalesforceTask, db_column='X1_CLUB_Task__c')
     external_id = models.CharField(max_length=100, db_column='Task_Member_External_ID__c')
-    motivation = models.CharField(max_length=5000, db_column='Motivation__c')
-    status = models.CharField(max_length=255, db_column='Status__c')
-    taskmember_created_date = models.DateField(db_column='Taskmember_Created_Date__c')
+    Motivation__c = models.CharField(max_length=5000, db_column='Motivation__c')
+    Status__c = models.CharField(max_length=255, db_column='Status__c')
+    Taskmember_Created_Date__c = models.DateField(db_column='Taskmember_Created_Date__c')
 
     class Meta:
         db_table = 'Task_Members__c'
@@ -343,7 +352,7 @@ class SalesforceOrganizationMember(SalesforceModel):
     Contact__c = models.ForeignKey(SalesforceMember, db_column='Contact__c')
     Organization__c = models.ForeignKey(SalesforceOrganization, db_column='Organization__c')
     Role__c = models.CharField(max_length=20, db_column='Role__c')
-    Organization_Member_External_Id__c = models.CharField(max_length=100, db_column='Organization_Member_External_Id__c')
+    external_id = models.CharField(max_length=100, db_column='Organization_Member_External_Id__c')
 
     class Meta:
         db_table = 'Organization_Member__c'
@@ -355,40 +364,13 @@ class SalesforceLogItem(SalesforceModel):
     Custom Salesforce Log_Item__c object.
     The object is used to store log data from external and internal sources.
     """
-    entered = models.DateTimeField(db_column='Entered__c')
-    errors = models.PositiveIntegerField(max_length=18, db_column='Errors__c')
-    message = models.CharField(max_length=32000, db_column='Message__c')
-    source = models.CharField(max_length=255, db_column='Source__c')
-    source_extended = models.CharField(max_length=255, db_column='Source_Extended__c')
-    successes = models.PositiveIntegerField(max_length=18, db_column='Successes__c')
+    Entered__c = models.DateTimeField(db_column='Entered__c')
+    Errors__c = models.PositiveIntegerField(max_length=18, db_column='Errors__c')
+    Message__c = models.CharField(max_length=32000, db_column='Message__c')
+    Source__c = models.CharField(max_length=255, db_column='Source__c')
+    Source_Extended__c = models.CharField(max_length=255, db_column='Source_Extended__c')
+    Successes__c = models.PositiveIntegerField(max_length=18, db_column='Successes__c')
 
     class Meta:
         db_table = 'Log_Item__c'
-        managed = False
-
-
-class SalesforceLoginHistory(SalesforceModel):
-    """
-    Custom Login_History__c model. For Onepercentclub the mapping is named 1%CLUB Login History.
-    New mapping to be added later on.
-    """
-
-    bounce_rate_from_first_page = models.CharField(max_length=6, db_column='Bounce_rate_from_first_page__c')
-    contacts = models.ForeignKey(SalesforceMember, db_column='Contacts__c')
-    engagement_on_facebook = models.PositiveIntegerField(max_length=8, db_column='Engagement_on_Facebook__c')
-    engagement_on_twitter = models.PositiveIntegerField(max_length=8, db_column='Engagement_on_Twitter__c')
-    number_of_pageviews = models.PositiveIntegerField(max_length=8, db_column='Number_of_pageviews__c')
-    online_engagement_blogs = models.PositiveIntegerField(max_length=8, db_column='Online_engagement_blogs__c')
-    online_engagement_projects = models.PositiveIntegerField(max_length=8, db_column='Online_engagement_projects__c')
-    online_engagement_reactions_to_members = models.PositiveIntegerField(max_length=8, db_column='Online_engagement_'
-                                                                                                 'reactions_to_'
-                                                                                                 'members__c')
-    online_engagement_tasks = models.PositiveIntegerField(max_length=8, db_column='Online_engagement_tasks__c')
-    preferred_navigation_path = models.PositiveIntegerField(max_length=255, db_column='Preferred_navigation_path__c')
-    shares_via_social_media = models.PositiveIntegerField(max_length=8, db_column='Shares_via_social_media__c')
-    size_of_basket = models.PositiveIntegerField(max_length=8, db_column='Size_of_basket__c')
-    time_on_website = models.PositiveIntegerField(max_length=6, db_column='Time_on_website__c')
-
-    class Meta:
-        db_table = 'X1_CLUB_Login_History__c'
         managed = False

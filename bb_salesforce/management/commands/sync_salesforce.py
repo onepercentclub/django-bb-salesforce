@@ -1,5 +1,6 @@
 import logging
 import sys
+import bb_salesforce
 import os
 from optparse import make_option
 from datetime import timedelta
@@ -8,21 +9,19 @@ from django.utils import timezone
 from django.conf import settings
 from django.db import connection
 from bb_salesforce.synchronize import export_all
-from ...synchronize import sync_all
+from ...synchronize import sync_all, send_log
 from bluebottle.clients.models import Client
 
 #
 # Run with (example):
-# ./manage.py sync_salesforce -t onepercent -x -u 500 -v2
+# ./manage.py sync_salesforce -t onepercent -x -v2
+# ./manage.py sync_salesforce -t onepercent -s -u 120 -v2 --log-to-salesforce
 #
 
 
 class Command(BaseCommand):
     help = 'Synchronize data to Salesforce.'
     requires_model_validation = True
-
-    error_count = 0
-    success_count = 0
 
     verbosity_log_level = {
         '0': logging.ERROR,    # 0 means no output.
@@ -59,13 +58,12 @@ class Command(BaseCommand):
         if options['log_to_salesforce']:
             logger = logging.getLogger('salesforce')
             fhndl = logging.handlers.RotatingFileHandler(
-                os.path.join(settings.PROJECT_ROOT,"salesforce", "log", "last.log"),
+                os.path.join(settings.PROJECT_ROOT, "export", "salesforce", "last.log"),
                 backupCount=5)
             formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
             fhndl.setFormatter(formatter)
             fhndl.doRollover()
             logger.addHandler(fhndl)
-
         else:
             logger = logging.getLogger('console')
 
@@ -90,24 +88,35 @@ class Command(BaseCommand):
             sys.exit(1)
 
         sync_from_datetime = None
+        error_count = 0
+        success_count = 0
         if options['updated']:
             delta = timedelta(minutes=options['updated'])
             sync_from_datetime = timezone.now() - delta
             logger.info("Filtering only updated records from {0}".format(timezone.localtime(sync_from_datetime)))
 
-        logger.info("Process starting at {0}.".format(timezone.localtime(timezone.now())))
+        logger.info("Process starting at {0} (version {1})".format(
+            timezone.localtime(timezone.now()), bb_salesforce.__version__))
 
         if options['synchronize']:
             try:
-                sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
-
+                success_count, error_count = sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
+                logger.info("Process finished at {2} with {0} successes and {1} errors.".
+                            format(success_count,
+                                   error_count,
+                                   timezone.localtime(timezone.now())))
             except Exception as e:
-                self.error_count += 1
+                error_count += 1
                 logger.error("Error - stopping: {0}".format(e))
         elif options['csv_export']:
             try:
                 export_all(logger, sync_from_datetime)
-
+                logger.info("Process finished at {0}".format(timezone.localtime(timezone.now())))
             except Exception as e:
-                self.error_count += 1
+                error_count += 1
                 logger.error("Error - stopping: {0}".format(e))
+
+        if options['log_to_salesforce']:
+            send_log(os.path.join(settings.PROJECT_ROOT, "export", "salesforce", "last.log"),
+                     error_count, success_count, "export" if options['csv_export'] else "sync",
+                     options, logger)

@@ -5,17 +5,17 @@ from bb_salesforce.mappings import (
     SubRegionMapping, RegionMapping,DateTimeMapping, EuroMapping, EuroCentMapping, MethodMapping,
     RelatedObjectMapping, DateMapping, UserOrAnonymousMapping,
     StaticMapping, DonationStatusMapping,
-    OrderPaymentMethodMapping)
+    OrderPaymentMethodMapping, UserDonorMapping)
 from .base import BaseTransformer
 from bb_salesforce.models import (
     SalesforceMember, SalesforceOrganization, SalesforceProject,
-    SalesforceTask, SalesforceFundraiser)
+    SalesforceTask, SalesforceFundraiser, SalesforceCountry)
 
 
 class OrganizationTransformer(BaseTransformer):
 
     field_mapping = {
-        'Organization_External_ID__c': 'id',
+        'external_id': 'id',
         'Name': StringMapping('name', default="Organization"),
         'BillingCity': CropMapping('city', 40),
         'BillingStreet': ConcatenateMapping(['address_line1', 'address_line2']),
@@ -54,7 +54,7 @@ class OrganizationTransformer(BaseTransformer):
 class MemberTransformer(BaseTransformer):
 
     field_mapping = {
-        'Contact_External_ID__c': 'id',
+        'external_id': 'id',
         'Username__c': 'username',
         'Email': EmailMapping('email'),
         'Active__c': 'is_active',
@@ -108,7 +108,7 @@ class MemberTransformer(BaseTransformer):
 class OrganizationMemberTransformer(BaseTransformer):
 
     field_mapping = {
-        'Organization_Member_External_Id__c': 'id',
+        'external_id': 'id',
         'Contact__c': RelatedObjectMapping('user', SalesforceMember),
         'Organization__c':
             RelatedObjectMapping('organization', SalesforceOrganization),
@@ -120,7 +120,7 @@ class ProjectTransformer(BaseTransformer):
 
     field_mapping = {
 
-        'Project_External_ID__c': 'id',
+        'external_id': 'id',
         'Project_name__c': 'title',
         # 'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000),
         'VideoURL__c': 'video_url',
@@ -146,6 +146,7 @@ class ProjectTransformer(BaseTransformer):
         'Date_Funded__c': DateTimeMapping('campaign_funded'),
 
         'Country_in_which_the_project_is_located__c': CountryMapping('country'),
+        'Country__c': RelatedObjectMapping('country', SalesforceCountry),
         'Sub_region__c': SubRegionMapping('country'),
         'Region__c': RegionMapping('country'),
         'Theme__c': RelatedMapping('theme.name'),
@@ -168,7 +169,7 @@ class ProjectTransformer(BaseTransformer):
 class FundraiserTransformer(BaseTransformer):
 
     field_mapping = {
-        'Fundraiser_External_ID__c': 'id',
+        'external_id': 'id',
         'Owner__c': RelatedObjectMapping('owner', SalesforceMember),
         'Project__c': RelatedObjectMapping('project', SalesforceProject),
         'Picture_Location__c':  ImageMapping('image'),
@@ -188,7 +189,7 @@ class FundraiserTransformer(BaseTransformer):
 class ProjectBudgetLineTransformer(BaseTransformer):
 
     field_mapping = {
-        'Project_Budget_External_ID__c': 'id',
+        'external_id': 'id',
         'Costs__c':  EuroCentMapping('amount'),
         'Description__c': 'description',
         'Project__c': RelatedObjectMapping('project', SalesforceProject)
@@ -199,26 +200,24 @@ class DonationTransformer(BaseTransformer):
     
     field_mapping = {
 
-        'external_id_donation': 'id',
-        'amount': EuroMapping('amount'),
+        'external_id': 'id',
+        'Amount': EuroMapping('amount'),
 
-        'donor': RelatedObjectMapping('order.user', SalesforceMember),
-        'project': RelatedObjectMapping('project', SalesforceProject),
-        'fundraiser':
-            RelatedObjectMapping('fundraiser', SalesforceFundraiser),
+        'Receiver__c': UserDonorMapping('order.user', SalesforceMember),
+        'Project__c': RelatedObjectMapping('project', SalesforceProject),
+        'Fundraiser__c': RelatedObjectMapping('fundraiser', SalesforceFundraiser),
 
-        'stage_name': DonationStatusMapping('order'),
+        'StageName': DonationStatusMapping('order'),
 
-        'close_date': DateTimeMapping('created'),
-        'donation_created_date': DateTimeMapping('created'),
-        'donation_updated_date': DateTimeMapping('updated'),
-        'donation_ready_date': DateTimeMapping('completed'),
+        'CloseDate': DateTimeMapping('created'),
+        'Donation_created_date__c': DateTimeMapping('created'),
+        'Donation_updated_date__c': DateTimeMapping('updated'),
+        'Donation_ready_date__c': DateTimeMapping('completed'),
 
-        'type': RelatedMapping('order.order_type'),
-        'name': UserOrAnonymousMapping('user'),
-        'record_type': StaticMapping('012A0000000ZK6FIAW'),
-        'payment_method': OrderPaymentMethodMapping('order')
-
+        'Type': RelatedMapping('order.order_type'),
+        'Name': UserOrAnonymousMapping('user'),
+        'RecordTypeId': StaticMapping('012A0000000ZK6FIAW'),
+        'Payment_method__c': OrderPaymentMethodMapping('order', 'Unknown')
     }
 
 
@@ -227,23 +226,23 @@ class TaskTransformer(BaseTransformer):
     field_mapping = {
 
         'external_id': 'id',
-        'project': RelatedObjectMapping('project', SalesforceProject),
-        'author':  RelatedObjectMapping('author', SalesforceMember),
-        'deadline': DateTimeMapping('deadline'),
+        'Project__c': RelatedObjectMapping('project', SalesforceProject),
+        'Author__c':  RelatedObjectMapping('author', SalesforceMember),
+        'Deadline__c': DateTimeMapping('deadline'),
 
-        'effort': 'time_needed',
-        # 'extended_task_description': 'description',
-        'location_of_the_task': 'location',
-        'people_needed': 'people_needed',
-        # 'end_goal': 'end_goal',
+        'Effort__c': 'time_needed',
+        # 'Extended_task_description__c': 'description',
+        'Location_of_the_task__c': 'location',
+        'People_Needed__c': 'people_needed',
+        # 'End_Goal__c': 'end_goal',
 
-        'task_expertise': RelatedMapping('skill.name'),
+        'Task_expertise__c': RelatedMapping('skill.name'),
 
-        'task_status': 'status',
-        'title': 'title',
-        'task_created_date': DateTimeMapping('created'),
-        'tags': TagsMapping('tags'),
-        'date_realized': DateTimeMapping('date_realized'),
+        'Task_status__c': 'status',
+        'Title__c': 'title',
+        'Task_created_date__c': DateTimeMapping('created'),
+        'Tags__c': TagsMapping('tags'),
+        'Date_realized__c': DateTimeMapping('date_realized'),
     }
 
 
@@ -252,9 +251,9 @@ class TaskMemberTransformer(BaseTransformer):
     field_mapping = {
 
         'external_id': 'id',
-        'contacts': RelatedObjectMapping('member', SalesforceMember),
-        'x1_club_task': RelatedObjectMapping('task', SalesforceTask),
-        # 'motivation': 'motivation',
-        'status': ChoiceMapping('status'),
-        'taskmember_created_date': DateTimeMapping('created')
+        'Contacts__c': RelatedObjectMapping('member', SalesforceMember),
+        'X1_CLUB_Task__c': RelatedObjectMapping('task', SalesforceTask),
+        # 'Motivation__c': 'motivation',
+        'Status__c': ChoiceMapping('status'),
+        'Taskmember_Created_Date__c': DateTimeMapping('created')
     }
