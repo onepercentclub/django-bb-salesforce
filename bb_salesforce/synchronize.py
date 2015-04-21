@@ -96,7 +96,7 @@ def sync_all(logger, updated_after=None, only_new=False):
 
 
 def calculate_sync_result((t_a, t_b), s_a, s_b):
-    return (s_a + t_a), (t_b + s_b)
+    return (int(s_a) + int(t_a)), (int(t_b) + int(s_b))
 
 
 def export_model(model=None, logger=None, updated_after=None, updated_field='updated',
