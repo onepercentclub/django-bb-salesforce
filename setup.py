@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from setuptools import setup
+import setuptools
 import bb_salesforce
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
@@ -8,10 +8,10 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-setup(
+setuptools.setup(
     name="django-bb-salesforce",
     version=bb_salesforce.__version__,
-    packages=['bb_salesforce'],
+    packages=setuptools.find_packages(),
     include_package_data=True,
     license='None',
     description='Salesforce synchronisation for Bluebottle',
