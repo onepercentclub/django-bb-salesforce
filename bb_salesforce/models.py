@@ -145,7 +145,7 @@ class SalesforceProject(SalesforceModel):
     Target_group_s_of_the_project__c = models.CharField(max_length=20000, db_column='Target_group_s_of_the_project__c')
     Country_in_which_the_project_is_located__c = models.CharField(max_length=255,
                                                                db_column='Country_in_which_the_project_is_located__c')
-    Country__c = models.ForeignKey(SalesforceCountry, db_column='Country__c')
+    Country__c = models.ForeignKey(SalesforceCountry, db_column='Country__c', null=True)
     Region__c = models.CharField(max_length=100, db_column='Region__c')
     Sub_region__c = models.CharField(max_length=100, db_column='Sub_region__c')
     Describe_the_project_in_one_sentence__c = models.CharField(max_length=50000,
