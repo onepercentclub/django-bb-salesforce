@@ -17,7 +17,6 @@ from django.core.files import File
 
 from django.template.defaultfilters import slugify
 
-from bluebottle.payments.models import OrderPayment
 
 class Mapping(object):
     """ Base class for mappings. """
@@ -458,7 +457,7 @@ class OrderPaymentMethodMapping(StringMapping):
 
     def map_value(self, old_value):
         order = super(StringMapping, self).map_value(old_value)
-        lp = OrderPayment.get_latest_by_order(order)
+        lp = order.order_payments.order_by(created)[-1]
         if order and lp:
             new_value = lp.payment_method
             if(lp.payment_method.startswith("docdata")):
