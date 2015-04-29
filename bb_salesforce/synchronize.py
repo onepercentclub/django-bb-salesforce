@@ -119,7 +119,7 @@ def export_model(model=None, logger=None, updated_after=None, updated_field='upd
 
     filename = 'BLUE2SFDC_{0}s.csv'.format(model.__name__)
     if not os.path.exists(export_path):
-        os.mkdirs(export_path)
+        os.makedirs(export_path)
 
     with open(os.path.join(export_path, filename), 'wb') as csv_outfile:
         csv_writer = csv.writer(csv_outfile, quoting=csv.QUOTE_ALL)
