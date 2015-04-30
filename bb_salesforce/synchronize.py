@@ -2,6 +2,7 @@
 
 import csv
 import os
+import collections
 
 from django.utils import timezone
 from django.conf import settings
@@ -11,7 +12,7 @@ from bb_salesforce.models import SalesforceLogItem
 from bb_salesforce import transformers
 
 
-def sync_model(model=None, logger=None, updated_after=None, only_new=False, updated_field='updated',
+def sync_model(model=None, logger=None, updated_after=None, only_new=False, sync_counter=None, updated_field='updated',
                updated_search='gte'):
 
     sf_model_name = "Salesforce{0}".format(model.__name__)
@@ -27,8 +28,6 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False, upda
 
     logger.info("Synchronizing {0} {1}s".format(objects.count(), model.__name__))
     t = 0
-    error_count = 0
-    success_count = 0
 
     for obj in objects.all():
         t += 1
@@ -47,24 +46,23 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False, upda
             sf_object = sf_model(external_id=trans_object['external_id'])
         except Exception as e:
             logger.error("Error while loading object id {0} - stopping: ".format(trans_object['external_id'] + str(e)))
-            return error_count+1
+            sync_counter.update('e')
+            return
 
         for attr, value in trans_object.iteritems():
             setattr(sf_object, attr, value)
         if (only_new and new) or not only_new:
             try:
                 sf_object.save()
-                success_count += 1
+                sync_counter.update('s')
             except Exception as e:
-                error_count += 1
+                sync_counter.update('e')
                 logger.error("Error while saving object id {0}: ".format(trans_object['external_id']) + str(e))
 
-    return success_count, error_count
+    return
 
 
-def sync_all(logger, updated_after=None, only_new=False):
-    success_count = 0
-    error_count = 0
+def sync_all(sync_counter, logger, updated_after=None, only_new=False):
 
     from bluebottle.organizations.models import Organization, OrganizationMember
     from bluebottle.members.models import Member
@@ -73,30 +71,15 @@ def sync_all(logger, updated_after=None, only_new=False):
     from bluebottle.projects.models import Project, ProjectBudgetLine
     from bluebottle.fundraisers.models import Fundraiser
 
-    success_count, error_count = calculate_sync_result(
-        sync_model(Member, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(Organization, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(OrganizationMember, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(Project, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(Fundraiser, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(ProjectBudgetLine, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(Task, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(TaskMember, logger, updated_after, only_new), success_count, error_count)
-    success_count, error_count = calculate_sync_result(
-        sync_model(Donation, logger, updated_after, only_new, 'order__updated'), success_count, error_count)
-
-    return success_count, error_count
-
-
-def calculate_sync_result((t_a, t_b), s_a, s_b):
-    return (int(s_a) + int(t_a)), (int(t_b) + int(s_b))
+    sync_model(Member, logger, updated_after, only_new, sync_counter)
+    sync_model(Organization, logger, updated_after, only_new, sync_counter)
+    sync_model(OrganizationMember, logger, updated_after, only_new, sync_counter)
+    sync_model(Project, logger, updated_after, only_new, sync_counter)
+    sync_model(Fundraiser, logger, updated_after, only_new, sync_counter)
+    sync_model(ProjectBudgetLine, logger, updated_after, only_new, sync_counter)
+    sync_model(Task, logger, updated_after, only_new, sync_counter)
+    sync_model(TaskMember, logger, updated_after, only_new, sync_counter)
+    sync_model(Donation, logger, updated_after, only_new, sync_counter, 'order__updated')
 
 
 def export_model(model=None, logger=None, updated_after=None, updated_field='updated',
@@ -158,14 +141,14 @@ def export_all(logger, updated_after=None):
     export_model(Donation, logger, updated_after, 'order__updated')
 
 
-def send_log(filename, err, succ, command, command_ext, logger):
+def send_log(filename, errors, successes, command, command_ext, logger):
     sflog = SalesforceLogItem()
     logger.info("Sending log to Salesforce...")
     sflog.Entered__c = timezone.localtime(timezone.now())
     sflog.Source__c = str(command)
     sflog.Source_Extended__c = str(command_ext)
-    sflog.Errors__c = err
-    sflog.Successes__c = succ
+    sflog.Errors__c = errors
+    sflog.Successes__c = successes
 
     with open(filename, "r") as logfile:
         for line in logfile:
