@@ -2,6 +2,7 @@ import logging
 import sys
 import bb_salesforce
 import os
+import collections
 from optparse import make_option
 from datetime import timedelta
 from django.core.management.base import BaseCommand
@@ -72,7 +73,7 @@ class Command(BaseCommand):
         logger.setLevel(log_level)
         tenant_list = Client.objects.values_list('client_name', flat=True)
         if not options['tenant']:
-            logger.error("You must specify a ternant with '--tenant' or '-t'.")
+            logger.error("You must specify a tenant with '--tenant' or '-t'.")
             logger.info("Valid tenants are: {0}".format(tenant_list))
             sys.exit(1)
         elif options['tenant'] not in tenant_list:
@@ -88,8 +89,8 @@ class Command(BaseCommand):
             sys.exit(1)
 
         sync_from_datetime = None
-        error_count = 0
-        success_count = 0
+        sync_counter = collections.Counter()
+
         if options['updated']:
             delta = timedelta(minutes=options['updated'])
             sync_from_datetime = timezone.now() - delta
@@ -100,23 +101,23 @@ class Command(BaseCommand):
 
         if options['synchronize']:
             try:
-                success_count, error_count = sync_all(logger, sync_from_datetime, only_new=options['sync_new'])
+                sync_all(sync_counter, logger, sync_from_datetime, only_new=options['sync_new'])
                 logger.info("Process finished at {2} with {0} successes and {1} errors.".
-                            format(success_count,
-                                   error_count,
+                            format(sync_counter['s'],
+                                   sync_counter['e'],
                                    timezone.localtime(timezone.now())))
             except Exception as e:
-                error_count += 1
+                sync_counter.update('e')
                 logger.error("Error - stopping: {0}".format(e))
         elif options['csv_export']:
             try:
                 export_all(logger, sync_from_datetime)
                 logger.info("Process finished at {0}".format(timezone.localtime(timezone.now())))
             except Exception as e:
-                error_count += 1
+                sync_counter.update('e')
                 logger.error("Error - stopping: {0}".format(e))
 
         if options['log_to_salesforce']:
             send_log(os.path.join(settings.PROJECT_ROOT, "export", "salesforce", "last.log"),
-                     error_count, success_count, "export" if options['csv_export'] else "sync",
+                     sync_counter['e'], sync_counter['s'], "export" if options['csv_export'] else "sync",
                      options, logger)
