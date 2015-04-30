@@ -62,7 +62,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False, sync
     return
 
 
-def sync_all(c, logger, updated_after=None, only_new=False):
+def sync_all(sync_counter, logger, updated_after=None, only_new=False):
 
     from bluebottle.organizations.models import Organization, OrganizationMember
     from bluebottle.members.models import Member
@@ -71,15 +71,15 @@ def sync_all(c, logger, updated_after=None, only_new=False):
     from bluebottle.projects.models import Project, ProjectBudgetLine
     from bluebottle.fundraisers.models import Fundraiser
 
-    sync_model(Member, logger, updated_after, only_new, c)
-    sync_model(Organization, logger, updated_after, only_new, c)
-    sync_model(OrganizationMember, logger, updated_after, only_new, c)
-    sync_model(Project, logger, updated_after, only_new, c)
-    sync_model(Fundraiser, logger, updated_after, only_new, c)
-    sync_model(ProjectBudgetLine, logger, updated_after, only_new, c)
-    sync_model(Task, logger, updated_after, only_new, c)
-    sync_model(TaskMember, logger, updated_after, only_new, c)
-    sync_model(Donation, logger, updated_after, only_new, c, 'order__updated')
+    sync_model(Member, logger, updated_after, only_new, sync_counter)
+    sync_model(Organization, logger, updated_after, only_new, sync_counter)
+    sync_model(OrganizationMember, logger, updated_after, only_new, sync_counter)
+    sync_model(Project, logger, updated_after, only_new, sync_counter)
+    sync_model(Fundraiser, logger, updated_after, only_new, sync_counter)
+    sync_model(ProjectBudgetLine, logger, updated_after, only_new, sync_counter)
+    sync_model(Task, logger, updated_after, only_new, sync_counter)
+    sync_model(TaskMember, logger, updated_after, only_new, sync_counter)
+    sync_model(Donation, logger, updated_after, only_new, sync_counter, 'order__updated')
 
 
 def export_model(model=None, logger=None, updated_after=None, updated_field='updated',
@@ -141,14 +141,14 @@ def export_all(logger, updated_after=None):
     export_model(Donation, logger, updated_after, 'order__updated')
 
 
-def send_log(filename, err, succ, command, command_ext, logger):
+def send_log(filename, errors, successes, command, command_ext, logger):
     sflog = SalesforceLogItem()
     logger.info("Sending log to Salesforce...")
     sflog.Entered__c = timezone.localtime(timezone.now())
     sflog.Source__c = str(command)
     sflog.Source_Extended__c = str(command_ext)
-    sflog.Errors__c = err
-    sflog.Successes__c = succ
+    sflog.Errors__c = errors
+    sflog.Successes__c = successes
 
     with open(filename, "r") as logfile:
         for line in logfile:
