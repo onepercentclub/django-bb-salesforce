@@ -135,7 +135,9 @@ class UserOrAnonymousMapping(IdentityMapping):
         user = super(UserOrAnonymousMapping, self).map_value(old_value)
         if not user:
             return self.default
-        return user.get_full_name()
+        if user.get_full_name().strip():
+            return user.get_full_name()
+        return user.username
 
 
 class MethodMapping(IdentityMapping):
