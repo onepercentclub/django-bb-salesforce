@@ -459,8 +459,9 @@ class OrderPaymentMethodMapping(StringMapping):
 
     def map_value(self, old_value):
         order = super(StringMapping, self).map_value(old_value)
-        lp = order.order_payments.order_by(created)[-1]
-        if order and lp:
+        order_payments = order.order_payments.order_by('-created').filter(order=order).all()
+        if len(order_payments) > 0:
+            lp = order_payments[0]
             new_value = lp.payment_method
             if(lp.payment_method.startswith("docdata")):
                 new_value = lp.payment_method[7:]
