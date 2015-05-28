@@ -26,7 +26,7 @@ class OrganizationTransformer(BaseTransformer):
         'E_mail_address__c': EmailMapping('email'),
         'Phone': 'phone_number',
         'Website': 'website',
-        'Twitter__c': 'twitter',
+        # 'Twitter__c': 'twitter',
         'Facebook__c': 'facebook',
         'Skype__c': 'skype',
         'Tags__c': TagsMapping('tags'),
@@ -67,7 +67,8 @@ class MemberTransformer(BaseTransformer):
         'FirstName':  'first_name',
         'LastName': StringMapping('last_name', default="Member"),
 
-        'Location__c': 'location',
+        'Location__c': StaticMapping(''),
+
         'Picture_Location__c': ImageMapping('picture'),
         # 'About_me_us__c': 'about_me',
         'Primary_language__c': 'primary_language',
@@ -95,13 +96,6 @@ class MemberTransformer(BaseTransformer):
 
         'Website__c':  'website',
         'Facebook__c':  'facebook',
-
-        # Removed fields
-        # 'why_one_percent_member':  NullMapping(),
-        # 'availability':  NullMapping(),
-        # 'twitter':  NullMapping(),
-        # 'skype':  NullMapping(),
-        # 'tags': NullMapping(),
     }
 
 
@@ -151,6 +145,7 @@ class ProjectTransformer(BaseTransformer):
         'Region__c': RegionMapping('country'),
         'Theme__c': RelatedMapping('theme.name'),
         'Status_project__c': RelatedMapping('status.name'),
+        'NumberOfPeopleReachedDirect__c': 'reach',
 
         'Tags__c': TagsMapping('tags'),
         'Partner_Organization__c': RelatedMapping('partner_organization.name', default="-"),
@@ -173,12 +168,9 @@ class FundraiserTransformer(BaseTransformer):
         'Owner__c': RelatedObjectMapping('owner', SalesforceMember),
         'Project__c': RelatedObjectMapping('project', SalesforceProject),
         'Picture_Location__c':  ImageMapping('image'),
-        # 'Picture_Location__c': EmptyMapping('image'),
         'Name': CropMapping('title', 80),
-        # 'Name': EmptyMapping('name'),
         # 'Description__c': 'description',
         'VideoURL__c': 'video_url',
-        # 'VideoURL__c': EmptyMapping('video_url'),
         'Amount__c':  EuroMapping('amount'),
         'Amount_at_the_moment__c': EuroMapping('amount_donated'),
         'Deadline__c': DateTimeMapping('deadline'),
