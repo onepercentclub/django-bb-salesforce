@@ -30,22 +30,24 @@ class OrganizationTransformer(BaseTransformer):
         'Facebook__c': 'facebook',
         'Skype__c': 'skype',
         'Tags__c': TagsMapping('tags'),
-        'Bank_account_name__c': 'account_holder_name',
 
-        'Bank_account_address__c': 'account_holder_address',
-        'Bank_account_postalcode__c': 'account_holder_postal_code',
-        'Bank_account_city__c': 'account_holder_city',
-        'Bank_account_country__c':  CountryMapping('account_holder_country'),
+        # 'Bank_account_name__c': 'account_holder_name',
+        #
+        # 'Bank_account_address__c': 'account_holder_address',
+        # 'Bank_account_postalcode__c': 'account_holder_postal_code',
+        # 'Bank_account_city__c': 'account_holder_city',
+        # 'Bank_account_country__c':  CountryMapping('account_holder_country'),
+        #
+        # 'Bank_bankname__c':  'account_bank_name',
+        # 'Bank_address__c': 'account_bank_address',
+        # 'Bank_postalcode__c': 'account_bank_postal_code',
+        # 'Bank_city__c': 'account_bank_city',
+        # 'Bank_country__c': CountryMapping('account_bank_country'),
+        #
+        # 'Bank_account_number__c': 'account_number',
+        # 'Bank_SWIFT__c': 'account_bic',
+        # 'Bank_account_IBAN__c': 'account_iban',
 
-        'Bank_bankname__c':  'account_bank_name',
-        'Bank_address__c': 'account_bank_address',
-        'Bank_postalcode__c': 'account_bank_postal_code',
-        'Bank_city__c': 'account_bank_city',
-        'Bank_country__c': CountryMapping('account_bank_country'),
-
-        'Bank_account_number__c': 'account_number',
-        'Bank_SWIFT__c': 'account_bic',
-        'Bank_account_IBAN__c': 'account_iban',
         'Organization_created_date__c': DateTimeMapping('created'),
         'Deleted__c': DateTimeMapping('deleted'),
     }
@@ -67,7 +69,7 @@ class MemberTransformer(BaseTransformer):
         'FirstName':  'first_name',
         'LastName': StringMapping('last_name', default="Member"),
 
-        'Location__c': StaticMapping(''),
+        'Location__c': 'place',
 
         'Picture_Location__c': ImageMapping('picture'),
         # 'About_me_us__c': 'about_me',
@@ -75,12 +77,10 @@ class MemberTransformer(BaseTransformer):
         'Receive_newsletter__c': 'newsletter',
         'Phone': 'phone_number',
         'Birthdate': DateTimeMapping('birthdate'),
-        
         'Gender__c': ChoiceMapping('gender'),
 
         'MailingCity': 'address.city',
         'MailingStreet': StreetMapping('address'),
-
         'MailingCountry': CountryMapping('address.country'),
         'MailingPostalCode': RelatedMapping('address.postal_code'),
         'MailingState': RelatedMapping('address.state'),
