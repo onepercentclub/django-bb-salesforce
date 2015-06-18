@@ -24,6 +24,7 @@ class Mapping(object):
     def __repr__(self):
         return u'<%s>' % self.__class__.__name__
 
+
 class IdentityMapping(Mapping):
     """
     """
@@ -184,7 +185,7 @@ class DateTimeMapping(IdentityMapping):
 
     def to_csv(self):
         new_value = super(DateTimeMapping, self).to_csv()
-        if new_value:
+        if new_value and new_value.year > 1900:
             return new_value.strftime(self.date_format)
         return ''
 
@@ -212,6 +213,7 @@ class EuroMapping(IdentityMapping):
             old_value = self.default
         return "%01.2f" % (old_value)
 
+
 class EuroCentMapping(IdentityMapping):
     """
     Return an amount in euro with default 0
@@ -225,6 +227,7 @@ class EuroCentMapping(IdentityMapping):
         if not old_value:
             old_value = self.default
         return "%01.2f" % (old_value / 100)
+
 
 class EmailMapping(StringMapping):
     """
@@ -413,7 +416,11 @@ class RelatedObjectMapping(IdentityMapping):
             parts = self.from_field.split('.')
 
         related_id = getattr(self.instance, '{0}_id'.format(self.from_field))
-        # Somtimes it somehow returns multiple objects.
+
+        if not related_id:
+            return None
+
+        # The query should not return multiple objects, but make sure that if this is the case it is properly handled
         objs = self.sf_model.objects.filter(external_id=related_id).all()
         if objs.count():
             sf_object = objs[0]
@@ -440,7 +447,7 @@ class UserDonorMapping(IdentityMapping):
         if not related_id:
             return None
 
-        # Somtimes it somehow returns multiple objects.
+        # The query should not return multiple objects, but make sure that if this is the case it is properly handled
         objs = self.sf_model.objects.filter(external_id=related_id).all()
         if objs.count():
             sf_object = objs[0]
@@ -463,7 +470,7 @@ class OrderPaymentMethodMapping(StringMapping):
         if len(order_payments) > 0:
             lp = order_payments[0]
             new_value = lp.payment_method
-            if(lp.payment_method.startswith("docdata")):
+            if lp.payment_method.startswith("docdata"):
                 new_value = lp.payment_method[7:]
             return new_value
         return self.default
