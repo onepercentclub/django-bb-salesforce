@@ -136,6 +136,7 @@ class SalesforceProject(SalesforceModel):
     Amount_at_the_moment__c = models.CharField(max_length=255, db_column='Amount_at_the_moment__c')
     Amount_requested__c = models.CharField(max_length=255, db_column='Amount_requested__c')
     Amount_still_needed__c = models.CharField(max_length=255, db_column='Amount_still_needed__c')
+    Amount_extra__c = models.CharField(max_length=255, db_column='Amount_extra__c')
     Project_name__c = models.CharField(max_length=80, db_column='Project_name__c')
     Project_Owner__c = models.ForeignKey(SalesforceMember, db_column='Project_Owner__c')
     Status_project__c = models.CharField(max_length=255,
@@ -157,6 +158,7 @@ class SalesforceProject(SalesforceModel):
     Contribution_project_in_reducing_poverty__c = models.CharField(max_length=32000,
                                                                 db_column='Contribution_project_in_reducing_poverty__c')
     Earth_Charther_project__c = models.BooleanField(db_column='Earth_Charther_project__c', default=False)
+    Skip_Monthly__c = models.BooleanField(db_column='Skip_Monthly__c', default=False)
     Sustainability__c = models.CharField(max_length=20000, db_column='Sustainability__c')
     Additional_explanation_of_budget__c = models.CharField(max_length=32000,
                                                         db_column='Additional_explanation_of_budget__c')
@@ -198,10 +200,12 @@ class SalesforceProject(SalesforceModel):
     NumberOfPeopleReachedIndirect__c = models.PositiveIntegerField(max_length=18,
                                                                   db_column='NumberOfPeopleReachedIndirect__c')
     Theme__c = models.CharField(max_length=255, db_column='Theme__c')
+    Language__c = models.CharField(max_length=255, db_column='Language__c')
     Donation_total__c = models.CharField(max_length=20, db_column='Donation_total__c')
     Supporter_count__c = models.PositiveIntegerField(max_length=8, db_column='Supporter_count__c')
     Donation_oo_total__c = models.CharField(max_length=20, db_column='Donation_oo_total__c')
     Supporter_oo_count__c = models.PositiveIntegerField(max_length=8, db_column='Supporter_oo_count__c')
+    Popularity__c = models.CharField(max_length=200, db_column='Popularity__c')
 
     class Meta:
         db_table = 'Project__c'

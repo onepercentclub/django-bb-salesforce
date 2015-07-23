@@ -116,7 +116,7 @@ class ProjectTransformer(BaseTransformer):
 
         'external_id': 'id',
         'Project_name__c': 'title',
-        # 'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000),
+        'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000),      # Long text
         'VideoURL__c': 'video_url',
         'Is_Campaign__c': 'is_campaign',
 
@@ -125,9 +125,12 @@ class ProjectTransformer(BaseTransformer):
         'Amount_still_needed__c': EuroMapping('amount_needed'),
         'Donation_total__c':  EuroMapping('amount_donated'),
         'Donation_oo_total__c':  EuroMapping('amount_donated'),
+        'Amount_extra__c': EuroMapping('amount_extra'),
 
         'Allow_Overfunding__c': 'allow_overfunding',
-        # 'Story__c': 'story',
+        'Story__c': 'story',                                                        # Long text
+        'Popularity__c': 'popularity',
+        'Skip_Monthly__c': 'skip_monthly',
 
         'Picture_Location__c': ImageMapping('image'),
 
@@ -146,6 +149,7 @@ class ProjectTransformer(BaseTransformer):
         'Theme__c': RelatedMapping('theme.name'),
         'Status_project__c': RelatedMapping('status.name'),
         'NumberOfPeopleReachedDirect__c': 'reach',
+        'Language__c': RelatedMapping('language.language_name'),
 
         'Tags__c': TagsMapping('tags'),
         'Partner_Organization__c': RelatedMapping('partner_organization.name', default="-"),
@@ -169,7 +173,7 @@ class FundraiserTransformer(BaseTransformer):
         'Project__c': RelatedObjectMapping('project', SalesforceProject),
         'Picture_Location__c':  ImageMapping('image'),
         'Name': CropMapping('title', 80),
-        # 'Description__c': 'description',
+        'Description__c': 'description',                                            # Long text
         'VideoURL__c': 'video_url',
         'Amount__c':  EuroMapping('amount'),
         'Amount_at_the_moment__c': EuroMapping('amount_donated'),
@@ -223,10 +227,10 @@ class TaskTransformer(BaseTransformer):
         'Deadline__c': DateTimeMapping('deadline'),
 
         'Effort__c': 'time_needed',
-        # 'Extended_task_description__c': 'description',
+        'Extended_task_description__c': 'description',                              # Long text
         'Location_of_the_task__c': 'location',
         'People_Needed__c': 'people_needed',
-        # 'End_Goal__c': 'end_goal',
+        'End_Goal__c': 'end_goal',                                                  # Long text
 
         'Task_expertise__c': RelatedMapping('skill.name'),
 
@@ -245,7 +249,7 @@ class TaskMemberTransformer(BaseTransformer):
         'external_id': 'id',
         'Contacts__c': RelatedObjectMapping('member', SalesforceMember),
         'X1_CLUB_Task__c': RelatedObjectMapping('task', SalesforceTask),
-        # 'Motivation__c': 'motivation',
+        'Motivation__c': 'motivation',                                              # Long text
         'Status__c': ChoiceMapping('status'),
         'Taskmember_Created_Date__c': DateTimeMapping('created')
     }
