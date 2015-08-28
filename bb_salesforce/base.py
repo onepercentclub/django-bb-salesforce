@@ -66,5 +66,6 @@ class BaseTransformer(object):
         for field in self.field_mapping.iterkeys():
             # Get the mapping
             mapping = self.get_mapping(field)
-            value_list.append(mapping(self.from_instance).to_csv())
+            if not mapping(self.from_instance).omit_from_csv():
+                value_list.append(mapping(self.from_instance).to_csv())
         return value_list

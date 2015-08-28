@@ -109,8 +109,9 @@ def export_model(model=None, logger=None, updated_after=None, updated_field='upd
         # Get titles from db_column names from sf model
         sf_names = []
         for field in transformer.field_mapping.keys():
-            local_name, sf_name = sf_model._meta.get_field_by_name(field)[0].get_attname_column()
-            sf_names.append(sf_name)
+            if not getattr(transformer.field_mapping[field], 'omit_csv', False):
+                local_name, sf_name = sf_model._meta.get_field_by_name(field)[0].get_attname_column()
+                sf_names.append(sf_name)
         csv_writer.writerow(sf_names)
 
         for obj in objects.all():
