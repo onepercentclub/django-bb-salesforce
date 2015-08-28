@@ -85,7 +85,7 @@ class Command(BaseCommand):
             connection.set_tenant(tenant)
 
         if not options['csv_export'] and not options['synchronize']:
-            logger.error("You must specify an action [--csv-export or  --synchronize]")
+            logger.error("You must specify an action [--csv-export or --synchronize]")
             sys.exit(1)
 
         sync_from_datetime = None
@@ -96,8 +96,12 @@ class Command(BaseCommand):
             sync_from_datetime = timezone.now() - delta
             logger.info("Filtering only updated records from {0}".format(timezone.localtime(sync_from_datetime)))
 
-        logger.info("Process starting at {0} (version {1})".format(
-            timezone.localtime(timezone.now()), bb_salesforce.__version__))
+        logger.info("Salesforce Sync Settings [timeout: {0}s] [retries: {1}x] [version: {2}]".
+                     format(getattr(settings, 'SALESFORCE_QUERY_TIMEOUT', '(def) '),
+                            getattr(settings, 'REQUESTS_MAX_RETRIES', '(def) '),
+                            bb_salesforce.__version__))
+
+        logger.info("Process starting at {0}".format(timezone.localtime(timezone.now())))
 
         if options['synchronize']:
             try:

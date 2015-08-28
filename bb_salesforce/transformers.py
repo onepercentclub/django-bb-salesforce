@@ -3,9 +3,9 @@ from bb_salesforce.mappings import (
     ConcatenateMapping, EmailMapping, TagsMapping,
     ChoiceMapping, EmptyMapping, RelatedMapping, StreetMapping, ImageMapping,
     SubRegionMapping, RegionMapping,DateTimeMapping, EuroMapping, EuroCentMapping, MethodMapping,
-    RelatedObjectMapping, DateMapping, UserOrAnonymousMapping,
+    RelatedObjectMapping, DateMapping, UserOrAnonymousMapping, StringReplaceMapping,
     StaticMapping, DonationStatusMapping,
-    OrderPaymentMethodMapping, UserDonorMapping)
+    OrderPaymentMethodMapping, UserDonorMapping, StringFlatMapping)
 from .base import BaseTransformer
 from bb_salesforce.models import (
     SalesforceMember, SalesforceOrganization, SalesforceProject,
@@ -31,23 +31,6 @@ class OrganizationTransformer(BaseTransformer):
         'Skype__c': 'skype',
         'Tags__c': TagsMapping('tags'),
 
-        # 'Bank_account_name__c': 'account_holder_name',
-        #
-        # 'Bank_account_address__c': 'account_holder_address',
-        # 'Bank_account_postalcode__c': 'account_holder_postal_code',
-        # 'Bank_account_city__c': 'account_holder_city',
-        # 'Bank_account_country__c':  CountryMapping('account_holder_country'),
-        #
-        # 'Bank_bankname__c':  'account_bank_name',
-        # 'Bank_address__c': 'account_bank_address',
-        # 'Bank_postalcode__c': 'account_bank_postal_code',
-        # 'Bank_city__c': 'account_bank_city',
-        # 'Bank_country__c': CountryMapping('account_bank_country'),
-        #
-        # 'Bank_account_number__c': 'account_number',
-        # 'Bank_SWIFT__c': 'account_bic',
-        # 'Bank_account_IBAN__c': 'account_iban',
-
         'Organization_created_date__c': DateTimeMapping('created'),
         'Deleted__c': DateTimeMapping('deleted'),
     }
@@ -72,7 +55,7 @@ class MemberTransformer(BaseTransformer):
         'Location__c': 'place',
 
         'Picture_Location__c': ImageMapping('picture'),
-        # 'About_me_us__c': 'about_me',
+        'About_me_us__c': StringMapping('about_me', omit_csv=True),               # Long text
         'Primary_language__c': 'primary_language',
         'Receive_newsletter__c': 'newsletter',
         'Phone': 'phone_number',
@@ -96,6 +79,8 @@ class MemberTransformer(BaseTransformer):
 
         'Website__c':  'website',
         'Facebook__c':  'facebook',
+        'Twitter__c': 'twitter',
+        'Skype__c': 'skypename'
     }
 
 
@@ -116,7 +101,7 @@ class ProjectTransformer(BaseTransformer):
 
         'external_id': 'id',
         'Project_name__c': 'title',
-        'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000),      # Long text
+        'Describe_the_project_in_one_sentence__c': CropMapping('pitch', 5000, omit_csv=True),      # Long text
         'VideoURL__c': 'video_url',
         'Is_Campaign__c': 'is_campaign',
 
@@ -128,7 +113,7 @@ class ProjectTransformer(BaseTransformer):
         'Amount_extra__c': EuroMapping('amount_extra'),
 
         'Allow_Overfunding__c': 'allow_overfunding',
-        'Story__c': 'story',                                                        # Long text
+        'Story__c': StringMapping('story', omit_csv=True),                                          # Long text
         'Popularity__c': 'popularity',
         'Skip_Monthly__c': 'skip_monthly',
 
@@ -173,7 +158,7 @@ class FundraiserTransformer(BaseTransformer):
         'Project__c': RelatedObjectMapping('project', SalesforceProject),
         'Picture_Location__c':  ImageMapping('image'),
         'Name': CropMapping('title', 80),
-        'Description__c': 'description',                                            # Long text
+        'Description__c': StringMapping('description', omit_csv=True),                              # Long text
         'VideoURL__c': 'video_url',
         'Amount__c':  EuroMapping('amount'),
         'Amount_at_the_moment__c': EuroMapping('amount_donated'),
@@ -187,7 +172,7 @@ class ProjectBudgetLineTransformer(BaseTransformer):
     field_mapping = {
         'external_id': 'id',
         'Costs__c':  EuroCentMapping('amount'),
-        'Description__c': 'description',
+        'Description__c': StringFlatMapping('description'),
         'Project__c': RelatedObjectMapping('project', SalesforceProject)
     }
 
@@ -227,10 +212,10 @@ class TaskTransformer(BaseTransformer):
         'Deadline__c': DateTimeMapping('deadline'),
 
         'Effort__c': 'time_needed',
-        'Extended_task_description__c': 'description',                              # Long text
+        'Extended_task_description__c': StringMapping('description', omit_csv=True),          # Long text
         'Location_of_the_task__c': 'location',
         'People_Needed__c': 'people_needed',
-        'End_Goal__c': 'end_goal',                                                  # Long text
+        'End_Goal__c': StringMapping('end_goal', omit_csv=True),                              # Long text
 
         'Task_expertise__c': RelatedMapping('skill.name'),
 
@@ -249,7 +234,7 @@ class TaskMemberTransformer(BaseTransformer):
         'external_id': 'id',
         'Contacts__c': RelatedObjectMapping('member', SalesforceMember),
         'X1_CLUB_Task__c': RelatedObjectMapping('task', SalesforceTask),
-        'Motivation__c': 'motivation',                                              # Long text
+        'Motivation__c': StringMapping('motivation', omit_csv=True),                 # Long text
         'Status__c': ChoiceMapping('status'),
         'Taskmember_Created_Date__c': DateTimeMapping('created')
     }

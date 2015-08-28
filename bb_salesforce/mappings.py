@@ -1,5 +1,6 @@
 import logging
 import re
+import string
 import urllib2
 
 from surlex import Surlex
@@ -35,8 +36,9 @@ class IdentityMapping(Mapping):
         self.set_instance(instance)
         return self
 
-    def __init__(self, from_field=None):
+    def __init__(self, from_field=None, omit_csv=False):
         self.from_field = from_field
+        self.omit_csv = omit_csv
 
     def get_field(self, instance=None, from_field=None):
         """
@@ -74,6 +76,9 @@ class IdentityMapping(Mapping):
     def to_field(self):
         return self.map()
 
+    def omit_from_csv(self):
+        return self.omit_csv
+
     def to_csv(self):
         new_value = self.map()
         if isinstance(new_value, bool):
@@ -109,9 +114,9 @@ class StringMapping(IdentityMapping):
     Identity mapping but for strings returns a default value when it is none
     """
 
-    def __init__(self, from_field=None, default=''):
+    def __init__(self, from_field=None, omit_csv=False, default=''):
         self.default = default
-        super(StringMapping, self).__init__(from_field)
+        super(StringMapping, self).__init__(from_field, omit_csv)
 
     def map_value(self, old_value):
         old_value = super(StringMapping, self).map_value(old_value)
@@ -120,6 +125,67 @@ class StringMapping(IdentityMapping):
         if not old_value.strip():
             return self.default
         return old_value
+
+
+class CropMapping(StringMapping):
+    """
+    Subclass of the IdentityMapping, doing automated cropping of field data
+    during the mapping.
+    """
+    def __init__(self, from_field, length, omit_csv=False, default=''):
+        self.length = length
+        super(CropMapping, self).__init__(from_field, omit_csv, default)
+
+    def map_value(self, old_value):
+        old_value = super(CropMapping, self).map_value(old_value)
+        return old_value[:self.length]
+
+
+class StringReplaceMapping(StringMapping):
+    """
+    Subclass of the IdentityMapping, doing string replace of field data
+    during the mapping.
+    """
+    def __init__(self, from_field, oldstr, newstr, omit_csv=False, default=''):
+        self.oldstr = oldstr
+        self.newstr = newstr
+        super(StringReplaceMapping, self).__init__(from_field, omit_csv, default)
+
+    def map_value(self, old_value):
+        old_value = super(StringReplaceMapping, self).map_value(old_value)
+        return string.replace(old_value, self.oldstr, self.newstr)
+
+
+class StringFlatMapping(StringMapping):
+    """
+    Subclass of the IdentityMapping, doing removal of NL and CR of field data
+    during the mapping.
+    """
+    def __init__(self, from_field, omit_csv=False, default=''):
+        super(StringFlatMapping, self).__init__(from_field, omit_csv, default)
+
+    def map_value(self, old_value):
+        old_value = super(StringFlatMapping, self).map_value(old_value)
+        old_value = string.replace(old_value, '\n', '')
+        old_value = string.replace(old_value, '\r', '')
+        return old_value
+
+
+class ConcatenateMapping(StringMapping):
+    """
+    Concatenate (string) fields into one value.
+    """
+    def __init__(self, from_fields, concatenate_str=' '):
+        self.from_fields = from_fields
+        self.concatenate_str = concatenate_str
+        super(ConcatenateMapping, self).__init__()
+
+    def map(self):
+        values = []
+        for field in self.from_fields:
+            values.append(getattr(self.instance, field))
+        new_value = self.concatenate_str.join(values)
+        return new_value
 
 
 class UserOrAnonymousMapping(IdentityMapping):
@@ -239,37 +305,6 @@ class EmailMapping(StringMapping):
         if old_value == None or not re_email.match(old_value.upper()):
             return ''
         return old_value
-
-
-class CropMapping(StringMapping):
-    """
-    Subclass of the IdentityMapping, doing automated cropping of field data
-    during the mapping.
-    """
-    def __init__(self, from_field, length, default=''):
-        self.length = length
-        super(CropMapping, self).__init__(from_field, default)
-
-    def map_value(self, old_value):
-        old_value = super(CropMapping, self).map_value(old_value)
-        return old_value[:self.length]
-
-
-class ConcatenateMapping(StringMapping):
-    """
-    Concatenate (string) fields into one value.
-    """
-    def __init__(self, from_fields, concatenate_str=' '):
-        self.from_fields = from_fields
-        self.concatenate_str = concatenate_str
-        super(ConcatenateMapping, self).__init__()
-
-    def map(self):
-        values = []
-        for field in self.from_fields:
-            values.append(getattr(self.instance, field))
-        new_value = self.concatenate_str.join(values)
-        return new_value
 
 
 class TagsMapping(StringMapping):
