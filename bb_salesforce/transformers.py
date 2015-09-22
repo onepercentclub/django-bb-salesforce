@@ -140,8 +140,9 @@ class ProjectTransformer(BaseTransformer):
         'Partner_Organization__c': RelatedMapping('partner_organization.name', default="-"),
 
         'Slug__c': 'slug',
-        'Supporter_count__c': MethodMapping('supporters_count'),
-        'Supporter_oo_count__c': MethodMapping('supporters_count', True),
+
+        'Supporter_count__c': MethodMapping('supporter_count'),
+        'Supporter_oo_count__c': MethodMapping('supporter_count', True),
 
         'Project_Owner__c': RelatedObjectMapping('owner', SalesforceMember),
         'Organization__c':
