@@ -137,8 +137,7 @@ class ProjectTransformer(BaseTransformer):
         'Language__c': RelatedMapping('language.language_name'),
 
         'Tags__c': TagsMapping('tags'),
-        'Partner_Organization__c': RelatedMapping('partner_organization.name', default="-"),
-
+        'Type__c': 'project_type',
         'Slug__c': 'slug',
 
         'Supporter_count__c': MethodMapping('supporter_count'),

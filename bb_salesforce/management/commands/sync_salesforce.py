@@ -58,6 +58,8 @@ class Command(BaseCommand):
         # Setup the log level for root logger.
         if options['log_to_salesforce']:
             logger = logging.getLogger('salesforce')
+            if not os.path.exists(os.path.join(settings.PROJECT_ROOT, "export", "salesforce")):
+                os.makedirs(os.path.join(settings.PROJECT_ROOT, "export", "salesforce"))
             fhndl = logging.handlers.RotatingFileHandler(
                 os.path.join(settings.PROJECT_ROOT, "export", "salesforce", "last.log"),
                 backupCount=5)

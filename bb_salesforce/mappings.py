@@ -437,6 +437,18 @@ class RegionMapping(IdentityMapping):
         return ''
 
 
+class ProjectCategoryMapping(StringMapping):
+    """
+    Turn categories into a semicolon picklist list
+    """
+    def map_value(self, old_value):
+        old_value = super(StringMapping, self).map_value(old_value)
+        categories = []
+        for cat in old_value.all():
+            categories.append(str(cat.slug))
+        return "; ".join(categories)[:255]
+
+
 class RelatedObjectMapping(IdentityMapping):
     """
     Map to a related object id (to_csv) or Salesforce object (to_field).
