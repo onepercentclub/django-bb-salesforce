@@ -27,7 +27,7 @@ setuptools.setup(
         'factory-boy==2.3.1',
         'django-choices',
         'django-extensions==1.1.1',
-        'django-nose==1.3',
+        'django-nose>=1.3',
         'django-setuptest==0.1.4',
         'surlex',
         'mock'

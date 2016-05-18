@@ -10,6 +10,7 @@ if not settings.configured:
         INSTALLED_APPS=[
             'tests',
             'django_nose',
+            'bb_salesforce'
         ],
         MIDDLEWARE_CLASSES=()
     )
