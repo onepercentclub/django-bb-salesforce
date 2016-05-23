@@ -20,14 +20,14 @@ setuptools.setup(
     author="1%Club Developers",
     author_email="devteam@onepercentclub.com", 
     install_requires=[
-        'Django>=1.6.8',
+        'Django>=1.9,<1.10',
         'django-salesforce==0.5',
     ],
     tests_require=[
         'factory-boy==2.3.1',
         'django-choices',
         'django-extensions==1.1.1',
-        'django-nose==1.3',
+        'django-nose>=1.3',
         'django-setuptest==0.1.4',
         'surlex',
         'mock'
