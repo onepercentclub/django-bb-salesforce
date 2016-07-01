@@ -3,7 +3,6 @@ import sys
 import bb_salesforce
 import os
 import collections
-from optparse import make_option
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -31,30 +30,32 @@ class Command(BaseCommand):
         '3': logging.DEBUG     # 3 means very verbose output.
     }
 
-    option_list = BaseCommand.option_list + (
-        make_option('--log-to-salesforce', action='store_true', default=False, dest='log_to_salesforce',
-                    help='Send the execution log to Salesforce'),
-
-        make_option('--tenant', '-t', action='store', type='string', dest='tenant',
-                    help='Tenant to sync or export'),
-
-        make_option('--dry-run', action='store_true', dest='dry_run', default=False,
-                    help='Execute a Salesforce sync without saving to Salesforce.'),
-
-        make_option('--updated', '-u', action='store', dest='updated', type='int', metavar='MINUTES',
-                    help="Only sync/export records that have been updated in the last MINUTES minutes."),
-
-        make_option('--sync-new', action='store_true', dest='sync_new',
-                    help="Sync only new records."),
-
-        make_option('--synchronize', '-s', action='store_true', dest='synchronize',
-                    help="Sync all records."),
-
-        make_option('--csv-export', '-x', action='store_true', dest='csv_export', default=False,
-                    help="Generate CSV files instead of syncing data with the Salesforce REST API.")
-    )
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument(
+            '--log-to-salesforce', action='store_true', default=False, dest='log_to_salesforce',
+            help='Send the execution log to Salesforce')
+        parser.add_argument(
+            '--tenant', '-t', action='store', type=str, dest='tenant',
+            help='Tenant to sync or export')
+        parser.add_argument(
+            '--dry-run', action='store_true', dest='dry_run', default=False,
+            help='Execute a Salesforce sync without saving to Salesforce.')
+        parser.add_argument(
+            '--updated', '-u', action='store', dest='updated', type=int, metavar='MINUTES',
+            help="Only sync/export records that have been updated in the last MINUTES minutes.")
+        parser.add_argument(
+            '--sync-new', action='store_true', dest='sync_new',
+            help="Sync only new records.")
+        parser.add_argument(
+            '--synchronize', '-s', action='store_true', dest='synchronize',
+            help="Sync all records.")
+        parser.add_argument(
+            '--csv-export', '-x', action='store_true', dest='csv_export', default=False,
+            help="Generate CSV files instead of syncing data with the Salesforce REST API.")
 
     def handle(self, *args, **options):
+
         # Setup the log level for root logger.
         if options['log_to_salesforce']:
             logger = logging.getLogger('salesforce')
@@ -70,9 +71,8 @@ class Command(BaseCommand):
         else:
             logger = logging.getLogger('console')
 
-        log_level = self.verbosity_log_level.get(options['verbosity'])
+        logger.setLevel(self.verbosity_log_level.get(str(options['verbosity'])))
 
-        logger.setLevel(log_level)
         tenant_list = Client.objects.values_list('client_name', flat=True)
         if not options['tenant']:
             logger.error("You must specify a tenant with '--tenant' or '-t'.")
@@ -99,9 +99,9 @@ class Command(BaseCommand):
             logger.info("Filtering only updated records from {0}".format(timezone.localtime(sync_from_datetime)))
 
         logger.info("Salesforce Sync Settings [timeout: {0}s] [retries: {1}x] [version: {2}]".
-                     format(getattr(settings, 'SALESFORCE_QUERY_TIMEOUT', '(def) '),
-                            getattr(settings, 'REQUESTS_MAX_RETRIES', '(def) '),
-                            bb_salesforce.__version__))
+                    format(getattr(settings, 'SALESFORCE_QUERY_TIMEOUT', '(def) '),
+                           getattr(settings, 'REQUESTS_MAX_RETRIES', '(def) '),
+                           bb_salesforce.__version__))
 
         logger.info("Process starting at {0}".format(timezone.localtime(timezone.now())))
 

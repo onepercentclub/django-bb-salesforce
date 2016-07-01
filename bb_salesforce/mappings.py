@@ -443,6 +443,10 @@ class ProjectCategoryMapping(StringMapping):
     """
     def map_value(self, old_value):
         old_value = super(StringMapping, self).map_value(old_value)
+
+        if not old_value:
+            return ""
+
         categories = []
         for cat in old_value.all():
             categories.append(str(cat.slug))

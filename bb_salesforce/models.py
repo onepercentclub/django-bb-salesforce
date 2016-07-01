@@ -108,7 +108,7 @@ class SalesforceMember(SalesforceModel):
     Availability = models.CharField(max_length=255, db_column='Availability__c')
     Receive_newsletter = models.BooleanField(db_column='Receive_newsletter__c')
     Primary_language = models.CharField(max_length=255, db_column='Primary_language__c')
-    Tags = models.CharField(max_length=255, db_column='Tags')
+    Tags = models.CharField(max_length=255, db_column='Tags__c')
 
     class Meta:
         db_table = 'Contact'
