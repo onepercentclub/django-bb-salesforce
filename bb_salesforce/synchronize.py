@@ -32,9 +32,7 @@ def sync_model(model=None, logger=None, updated_after=None, only_new=False, sync
         t += 1
         logger.debug("Syncing {0}  {1}/{2} [{3}] {4}".format(
             model.__name__, t, objects.count(), obj.id, str(obj)))
-
         trans_object = transformer(obj).to_dict()
-
         new = True
         try:
             sf_object = sf_model.objects.get(
@@ -144,15 +142,15 @@ def export_all(logger, updated_after=None):
 def send_log(filename, errors, successes, command, command_ext, logger):
     sflog = SalesforceLogItem()
     logger.info("Sending log to Salesforce...")
-    sflog.Entered__c = timezone.localtime(timezone.now())
-    sflog.Source__c = str(command)
-    sflog.Source_Extended__c = str(command_ext)
-    sflog.Errors__c = errors
-    sflog.Successes__c = successes
+    sflog.Entered = timezone.localtime(timezone.now())
+    sflog.Source = str(command)
+    sflog.Source_Extended = str(command_ext)
+    sflog.Errors = errors
+    sflog.Successes = successes
 
     with open(filename, "r") as logfile:
         for line in logfile:
-            sflog.Message__c += line[:1300]
+            sflog.Message += line[:1300]
 
     try:
         sflog.save()
